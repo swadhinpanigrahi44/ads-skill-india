@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+  <meta http-equiv="Pragma" content="no-cache">
+  <title>ADS SKILL INDIA</title>
+
+  <!-- Global CSS -->
+  <link href="/assets/global/css/bootstrap.min.css" rel="stylesheet">
+  <link href="/assets/global/css/all.min.css" rel="stylesheet">
+  <link href="/assets/global/css/line-awesome.min.css" rel="stylesheet">
+  <link href="/assets/global/css/select2.min.css" rel="stylesheet">
+
+  <!-- Tailwind CSS (Preflight Disabled) -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      prefix: 'tw-',
+      corePlugins: {
+        preflight: false,
+      }
+    }
+  </script>
+
+  <!-- Template CSS -->
+  <link rel="stylesheet" href="/assets/templates/basic/css/slick.css">
+  <link rel="stylesheet" href="/assets/templates/basic/css/custom.css">
+  <link rel="stylesheet" href="/assets/templates/basic/css/main.css">
+
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link
+    href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Outfit:wght@300;400;500;600;700&display=swap"
+    rel="stylesheet">
+
+  <!-- Notify CSS -->
+  <link href="/assets/global/css/iziToast.min.css" rel="stylesheet">
+  <link href="/assets/global/css/iziToast_custom.css" rel="stylesheet">
+
+  <!-- Pre-load color CSS immediately to prevent flash-of-orange on hard refresh.
+       This uses the same fallback color as DynamicColorCSS.vue so there is no visible jump.
+       Vue will update this href once it fetches the real admin-chosen color. -->
+  <link id="preload-color-css" rel="stylesheet"
+    href="/assets/templates/basic/css/color.php?color=1a73e8&secondColor=1565c0">
+
+  <!-- Dynamic Color CSS will be loaded via API -->
+  <script type="module" crossorigin src="/assets/index-B9gH15O4.js"></script>
+  <link rel="stylesheet" crossorigin href="/assets/index-3JqRs1vp.css">
+</head>
+
+<body>
+  <div id="app"></div>
+
+  <!-- Global JS -->
+  <script src="/assets/global/js/jquery-3.7.1.min.js"></script>
+  <script src="/assets/global/js/bootstrap.bundle.min.js"></script>
+  <script src="/assets/global/js/select2.min.js"></script>
+
+  <!-- Template JS -->
+  <script src="/assets/templates/basic/js/slick.min.js"></script>
+  <script src="/assets/templates/basic/js/main.js"></script>
+
+  <!-- Notify JS -->
+  <script src="/assets/global/js/iziToast.min.js"></script>
+
+  <!-- Vue.js App -->
+
+
+</body>
+
+</html>

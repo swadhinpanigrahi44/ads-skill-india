@@ -1,0 +1,62 @@
+# ── Dependencies ────────────────────────────────────────────
+node_modules/
+.pnp
+.pnp.js
+
+# ── Build outputs ───────────────────────────────────────────
+dist/
+build/
+.next/
+out/
+
+# ── Environment (NEVER commit secrets) ──────────────────────
+.env
+.env.local
+.env.*.local
+.env.production
+backend/.env
+frontend/.env
+frontend/.env.local
+
+# ── AI tool traces (not for public repo) ────────────────────
+.claude/
+.code-review-graph/
+CLAUDE.md
+AGENTS.md
+GEMINI.md
+
+# ── IDE / editor rules (personal preference, not project) ───
+.cursorrules
+.windsurfrules
+.mcp.json
+.vscode/
+.idea/
+
+# ── Prisma generated client (regenerated on deploy) ─────────
+backend/node_modules/.prisma/
+
+# ── Logs ────────────────────────────────────────────────────
+logs/
+*.log
+npm-debug.log*
+
+# ── OS ──────────────────────────────────────────────────────
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# ── Test coverage ───────────────────────────────────────────
+coverage/
+.nyc_output/
+
+# ── Internal / design docs (not for public repo) ────────────
+docs/superpowers/
+docs/design_handoff_ads_skill_india/
+
+# ── WhatsApp reference screenshots (local design refs only) ─
+screenshots-reference/
+
+# ── Empty scaffolding dirs (nothing in them yet) ────────────
+scripts/
+shared/
+skills/

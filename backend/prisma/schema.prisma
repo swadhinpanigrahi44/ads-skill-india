@@ -1,0 +1,332 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+enum Role {
+  USER
+  SUB_ADMIN
+  MASTER_ADMIN
+}
+
+enum KycStatus {
+  NOT_STARTED
+  PENDING
+  APPROVED
+  REJECTED
+}
+
+enum PaymentStatus {
+  CREATED
+  PROCESSING
+  SUCCESS
+  FAILED
+  REFUNDED
+}
+
+enum TransactionType {
+  COURSE_PURCHASE
+  PARTNER_PURCHASE
+  REFERRAL_COMMISSION
+  AD_EARNING
+  WITHDRAWAL_DEBIT
+  ADMIN_CREDIT
+  ADMIN_DEBIT
+}
+
+enum TransactionStatus {
+  PENDING
+  SETTLED
+  REVERSED
+}
+
+enum WithdrawalStatus {
+  REQUESTED
+  APPROVED
+  REJECTED
+  PAID
+}
+
+enum AdSessionStatus {
+  STARTED
+  COMPLETED
+  ABANDONED
+}
+
+model User {
+  id               String    @id @default(uuid())
+  adsId            String    @unique
+  fullName         String
+  email            String    @unique
+  mobile           String    @unique
+  state            String
+  passwordHash     String
+  role             Role      @default(USER)
+  isActive         Boolean   @default(true)
+  isBanned         Boolean   @default(false)
+  referralCode     String    @unique
+  referredById     String?
+  referredBy       User?     @relation("Referrals", fields: [referredById], references: [id])
+  referrals        User[]    @relation("Referrals")
+  kycStatus        KycStatus @default(NOT_STARTED)
+  kycSubmittedAt   DateTime?
+  kycApprovedAt    DateTime?
+  kycRejectedAt    DateTime?
+  kycRejectionNote String?
+  refreshTokenHash String?
+  twoFASecret      String?
+  twoFAEnabled     Boolean   @default(false)
+  createdAt        DateTime  @default(now())
+  updatedAt        DateTime  @updatedAt
+
+  wallet           Wallet?
+  payments         Payment[]
+  kycDocuments     KycDocument[]
+  adSessions       AdSession[]
+  withdrawals      Withdrawal[]
+  commissions      Commission[]
+  partnerTier      UserPartnerTier?
+  coursePurchases  CoursePurchase[]
+  auditLogs        AuditLog[]
+  passwordResets   PasswordReset[]
+
+  @@index([adsId])
+  @@index([email])
+  @@index([mobile])
+  @@index([referralCode])
+  @@index([referredById])
+}
+
+model PasswordReset {
+  id        String   @id @default(uuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id])
+  tokenHash String   @unique
+  expiresAt DateTime
+  used      Boolean  @default(false)
+  createdAt DateTime @default(now())
+
+  @@index([tokenHash])
+}
+
+model CoursePackage {
+  id              String           @id @default(uuid())
+  name            String
+  slug            String           @unique
+  price           Int
+  isActive        Boolean          @default(true)
+  sortOrder       Int              @default(0)
+  description     String?
+  createdAt       DateTime         @default(now())
+  payments        Payment[]
+  purchases       CoursePurchase[]
+  commissionRates CommissionRate[]
+
+  @@index([slug])
+}
+
+model CoursePurchase {
+  id          String        @id @default(uuid())
+  userId      String
+  user        User          @relation(fields: [userId], references: [id])
+  packageId   String
+  package     CoursePackage @relation(fields: [packageId], references: [id])
+  paymentId   String        @unique
+  payment     Payment       @relation(fields: [paymentId], references: [id])
+  purchasedAt DateTime      @default(now())
+
+  @@index([userId])
+}
+
+model PartnerTier {
+  id                 String            @id @default(uuid())
+  name               String
+  slug               String            @unique
+  price              Int
+  isActive           Boolean           @default(true)
+  sortOrder          Int               @default(0)
+  downlineAdsPercent Decimal           @default(0)
+  payments           Payment[]
+  userTiers          UserPartnerTier[]
+  commissionRates    CommissionRate[]
+
+  @@index([slug])
+}
+
+model UserPartnerTier {
+  id          String      @id @default(uuid())
+  userId      String      @unique
+  user        User        @relation(fields: [userId], references: [id])
+  tierId      String
+  tier        PartnerTier @relation(fields: [tierId], references: [id])
+  paymentId   String      @unique
+  payment     Payment     @relation(fields: [paymentId], references: [id])
+  purchasedAt DateTime    @default(now())
+
+  @@index([userId])
+}
+
+model CommissionRate {
+  id              String        @id @default(uuid())
+  partnerTierId   String
+  partnerTier     PartnerTier   @relation(fields: [partnerTierId], references: [id])
+  coursePackageId String
+  coursePackage   CoursePackage @relation(fields: [coursePackageId], references: [id])
+  level           Int
+  amount          Int
+
+  @@unique([partnerTierId, coursePackageId, level])
+  @@index([partnerTierId])
+}
+
+model Payment {
+  id                String         @id @default(uuid())
+  userId            String
+  user              User           @relation(fields: [userId], references: [id])
+  coursePackageId   String?
+  coursePackage     CoursePackage? @relation(fields: [coursePackageId], references: [id])
+  partnerTierId     String?
+  partnerTier       PartnerTier?   @relation(fields: [partnerTierId], references: [id])
+  razorpayOrderId   String         @unique
+  razorpayPaymentId String?        @unique
+  razorpaySignature String?
+  amount            Int
+  currency          String         @default("INR")
+  status            PaymentStatus  @default(CREATED)
+  idempotencyKey    String         @unique
+  failureReason     String?
+  paidAt            DateTime?
+  createdAt         DateTime       @default(now())
+  updatedAt         DateTime       @updatedAt
+  coursePurchase    CoursePurchase?
+  partnerPurchase   UserPartnerTier?
+  ledgerEntries     LedgerEntry[]
+
+  @@index([userId])
+  @@index([razorpayOrderId])
+  @@index([status])
+}
+
+model Wallet {
+  id               String   @id @default(uuid())
+  userId           String   @unique
+  user             User     @relation(fields: [userId], references: [id])
+  availableBalance Int      @default(0)
+  pendingBalance   Int      @default(0)
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @updatedAt
+
+  @@index([userId])
+}
+
+model LedgerEntry {
+  id           String            @id @default(uuid())
+  userId       String
+  walletId     String?
+  type         TransactionType
+  status       TransactionStatus @default(PENDING)
+  amount       Int
+  direction    String
+  paymentId    String?
+  payment      Payment?          @relation(fields: [paymentId], references: [id])
+  commissionId String?
+  commission   Commission?       @relation(fields: [commissionId], references: [id])
+  withdrawalId String?
+  withdrawal   Withdrawal?       @relation(fields: [withdrawalId], references: [id])
+  adSessionId  String?
+  note         String?
+  createdAt    DateTime          @default(now())
+
+  @@index([userId])
+  @@index([type])
+  @@index([createdAt])
+}
+
+model Commission {
+  id                   String            @id @default(uuid())
+  earnerId             String
+  earner               User              @relation(fields: [earnerId], references: [id])
+  triggeredByUserId    String
+  triggeredByPaymentId String
+  level                Int
+  amount               Int
+  status               TransactionStatus @default(PENDING)
+  settledAt            DateTime?
+  createdAt            DateTime          @default(now())
+  ledgerEntries        LedgerEntry[]
+
+  @@index([earnerId])
+  @@index([triggeredByUserId])
+  @@index([status])
+}
+
+model AdSession {
+  id              String          @id @default(uuid())
+  userId          String
+  user            User            @relation(fields: [userId], references: [id])
+  status          AdSessionStatus @default(STARTED)
+  startedAt       DateTime        @default(now())
+  completedAt     DateTime?
+  ipAddress       String?
+  userAgent       String?
+  durationSeconds Int?
+  earningAmount   Int             @default(0)
+
+  @@index([userId])
+  @@index([status])
+}
+
+model KycDocument {
+  id           String   @id @default(uuid())
+  userId       String
+  user         User     @relation(fields: [userId], references: [id])
+  documentType String
+  fileUrl      String
+  filePublicId String
+  uploadedAt   DateTime @default(now())
+
+  @@index([userId])
+}
+
+model Withdrawal {
+  id                String           @id @default(uuid())
+  userId            String
+  user              User             @relation(fields: [userId], references: [id])
+  amount            Int
+  method            String
+  upiId             String?
+  accountHolderName String?
+  accountNumber     String?
+  ifscCode          String?
+  bankName          String?
+  status            WithdrawalStatus @default(REQUESTED)
+  requestedAt       DateTime         @default(now())
+  reviewedById      String?
+  reviewedAt        DateTime?
+  rejectionNote     String?
+  transactionRef    String?
+  ledgerEntries     LedgerEntry[]
+
+  @@index([userId])
+  @@index([status])
+  @@index([requestedAt])
+}
+
+model AuditLog {
+  id         String   @id @default(uuid())
+  actorId    String?
+  actor      User?    @relation(fields: [actorId], references: [id])
+  action     String
+  targetType String?
+  targetId   String?
+  metadata   Json?
+  ipAddress  String?
+  createdAt  DateTime @default(now())
+
+  @@index([actorId])
+  @@index([action])
+  @@index([createdAt])
+}

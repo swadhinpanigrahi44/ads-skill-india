@@ -1,0 +1,36 @@
+.pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 3px 10px;
+  border-radius: 30px;
+  font-size: 11px;
+  font-weight: 600;
+  background: var(--surface-3);
+  color: var(--muted);
+  border: 1px solid var(--line);
+}
+
+.pill.good {
+  background: rgba(54, 211, 153, 0.12);
+  color: var(--good);
+  border-color: rgba(54, 211, 153, 0.25);
+}
+
+.pill.warn {
+  background: rgba(245, 165, 36, 0.12);
+  color: var(--warn);
+  border-color: rgba(245, 165, 36, 0.25);
+}
+
+.pill.bad {
+  background: rgba(255, 85, 119, 0.12);
+  color: var(--bad);
+  border-color: rgba(255, 85, 119, 0.25);
+}
+
+.pill.purple {
+  background: rgba(45, 125, 255, 0.16);
+  color: var(--accent-3);
+  border-color: rgba(45, 125, 255, 0.35);
+}

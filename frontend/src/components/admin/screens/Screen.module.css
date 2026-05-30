@@ -1,0 +1,15 @@
+.screen {
+  min-width: 0;
+}
+
+.screen h3 {
+  margin: 0 0 10px;
+  font-size: 18px;
+  font-weight: 700;
+}
+
+.screen p {
+  margin: 0;
+  color: var(--muted);
+  font-size: 14px;
+}

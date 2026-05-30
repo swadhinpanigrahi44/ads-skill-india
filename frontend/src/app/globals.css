@@ -1,0 +1,215 @@
+@import "tailwindcss";
+
+/* ============================================================
+   ADS Skill India — Design Tokens
+   ============================================================ */
+:root {
+  /* Surfaces - Black + Blue Gradient Theme */
+  --bg-base:        #03060d;
+  --bg-sidebar:     #060a14;
+  --bg-card:        #0a1020;
+  --bg-input:       #060a14;
+  --bg-toast:       #0f1729;
+
+  /* Borders */
+  --border-default: #1a2742;
+  --border-input:   #25365a;
+
+  /* Accents - Blue */
+  --accent:         #2d7dff;
+  --accent-dark:    #1858d4;
+  --accent-muted:   rgba(45, 125, 255, 0.13);
+  --accent-active:  rgba(45, 125, 255, 0.20);
+  --success:        #10b981;
+  --warning:        #f59e0b;
+  --info:           #06b6d4;
+  --danger:         #ef4444;
+
+  /* Text */
+  --text-primary:    #e8eaf0;
+  --text-secondary:  #c8cdd8;
+  --text-muted:      #8b92a5;
+  --text-active-nav: #5fa3ff;
+
+  /* Landing-page legacy tokens (kept for existing landing components) */
+  --background: #050b18;
+  --foreground: #ffffff;
+  --blue-primary: #0066ff;
+  --blue-secondary: #0044dd;
+  --card-bg: #0a1428;
+  --border-blue: rgba(0, 102, 255, 0.2);
+
+  /* Admin Dashboard Theme - Black + Blue Gradient */
+  --bg: #03060d;
+  --bg-2: #060a14;
+  --surface: #0a1020;
+  --surface-2: #0f1729;
+  --surface-3: #142039;
+  --line: #1a2742;
+  --line-2: #25365a;
+  --text: #e8eaf2;
+  --muted: #8a91a6;
+  --muted-2: #5f6577;
+  --accent: #2d7dff;
+  --accent-2: #1858d4;
+  --accent-3: #5fa3ff;
+  --good: #36d399;
+  --warn: #f5a524;
+  --bad: #ff5577;
+  --info: #56b6ff;
+  --grad-purple: linear-gradient(135deg, #0a3a8a, #1858d4 60%, #2d7dff);
+  --grad-blue: linear-gradient(135deg, #0a3a8a 0%, #1858d4 50%, #2d7dff 100%);
+  --grad-card: linear-gradient(180deg, rgba(45, 125, 255, 0.06), rgba(45, 125, 255, 0) 60%);
+  --grad-glow: radial-gradient(60% 80% at 50% 0%, rgba(45, 125, 255, 0.18), transparent 70%);
+  --grad-bg: radial-gradient(1200px 600px at 80% -10%, rgba(45, 125, 255, 0.15), transparent 50%),
+             radial-gradient(1000px 600px at -10% 100%, rgba(24, 88, 212, 0.12), transparent 50%),
+             linear-gradient(180deg, #03060d 0%, #060a14 100%);
+}
+
+@theme inline {
+  /* Tailwind v4 — expose tokens as utility colors */
+  --color-bg-base:        var(--bg-base);
+  --color-bg-sidebar:     var(--bg-sidebar);
+  --color-bg-card:        var(--bg-card);
+  --color-bg-input:       var(--bg-input);
+  --color-bg-toast:       var(--bg-toast);
+  --color-border-default: var(--border-default);
+  --color-border-input:   var(--border-input);
+  --color-accent:         var(--accent);
+  --color-accent-dark:    var(--accent-dark);
+  --color-success:        var(--success);
+  --color-warning:        var(--warning);
+  --color-info:           var(--info);
+  --color-danger:         var(--danger);
+  --color-text-primary:    var(--text-primary);
+  --color-text-secondary:  var(--text-secondary);
+  --color-text-muted:      var(--text-muted);
+  --color-text-active-nav: var(--text-active-nav);
+
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+
+  --font-sans:  var(--font-dm-sans), ui-sans-serif, system-ui, sans-serif;
+  --font-mono:  var(--font-geist-mono), ui-monospace, SFMono-Regular, monospace;
+
+  --radius-card:   12px;
+  --radius-button: 8px;
+  --radius-badge:  6px;
+}
+
+html { scroll-behavior: smooth; }
+
+body {
+  background: var(--background);
+  color: var(--foreground);
+  font-family: var(--font-dm-sans), ui-sans-serif, system-ui, sans-serif;
+  overflow-x: hidden;
+}
+
+/* App-shell pages (dashboard) — switch to dark surface with blue gradient */
+body[data-app="dashboard"] {
+  background:
+    radial-gradient(1200px 600px at 80% -10%, rgba(45, 125, 255, 0.12), transparent 50%),
+    radial-gradient(1000px 600px at -10% 100%, rgba(24, 88, 212, 0.10), transparent 50%),
+    linear-gradient(180deg, #03060d 0%, #060a14 100%);
+  background-attachment: fixed;
+  color: var(--text-primary);
+  overflow: hidden;
+}
+
+/* ============================================================
+   Scrollbars
+   ============================================================ */
+::-webkit-scrollbar { width: 6px; height: 6px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: #2a2f3e; border-radius: 3px; }
+::-webkit-scrollbar-thumb:hover { background: #3a4255; }
+
+/* Landing page legacy scrollbar (only when not in dashboard mode) */
+body:not([data-app="dashboard"]) ::-webkit-scrollbar-track { background: #050b18; }
+body:not([data-app="dashboard"]) ::-webkit-scrollbar-thumb { background: #0066ff55; }
+body:not([data-app="dashboard"]) ::-webkit-scrollbar-thumb:hover { background: #0066ff; }
+
+/* ============================================================
+   Utilities for the dashboard
+   ============================================================ */
+.dashboard-card {
+  background: var(--bg-card);
+  border: 1px solid var(--border-default);
+  border-radius: 12px;
+}
+
+.input-base {
+  background: var(--bg-input);
+  border: 1px solid var(--border-input);
+  border-radius: 8px;
+  color: var(--text-primary);
+  outline: none;
+  transition: border-color 0.15s;
+}
+.input-base::placeholder { color: var(--text-muted); }
+.input-base:focus { border-color: var(--accent); }
+
+/* Hide scrollbar for sidebar but keep functional */
+.sidebar-scroll {
+  scrollbar-width: thin;
+  scrollbar-color: #2a2f3e transparent;
+}
+
+/* ============================================================
+   Animations
+   ============================================================ */
+@keyframes marquee {
+  from { transform: translateX(0); }
+  to   { transform: translateX(-50%); }
+}
+.animate-marquee {
+  display: flex;
+  animation: marquee 28s linear infinite;
+  will-change: transform;
+}
+.animate-marquee:hover { animation-play-state: paused; }
+
+@keyframes float {
+  0%, 100% { transform: translateY(0px); }
+  50%       { transform: translateY(-12px); }
+}
+.animate-float { animation: float 4s ease-in-out infinite; }
+
+@keyframes glow-pulse {
+  0%, 100% { box-shadow: 0 0 20px rgba(0, 102, 255, 0.3); }
+  50%       { box-shadow: 0 0 40px rgba(0, 102, 255, 0.6); }
+}
+.animate-glow { animation: glow-pulse 2.5s ease-in-out infinite; }
+
+@keyframes fade-in-up {
+  from { opacity: 0; transform: translateY(8px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+.animate-fade-in-up { animation: fade-in-up 0.25s ease-out; }
+
+@keyframes toast-slide {
+  from { opacity: 0; transform: translateY(20px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+.animate-toast { animation: toast-slide 0.4s ease-out; }
+
+/* CPU Architecture animated paths (landing) */
+.cpu-architecture {
+  offset-anchor: 10px 0px;
+  animation: animation-path;
+  animation-iteration-count: infinite;
+  animation-timing-function: cubic-bezier(0.75, -0.01, 0, 0.99);
+}
+.cpu-line-1 { offset-path: path("M 10 20 h 79.5 q 5 0 5 5 v 30"); animation-duration: 5s; animation-delay: 1s; }
+.cpu-line-2 { offset-path: path("M 180 10 h -69.7 q -5 0 -5 5 v 40"); animation-delay: 6s; animation-duration: 2s; }
+.cpu-line-3 { offset-path: path("M 130 20 v 21.8 q 0 5 -5 5 h -25"); animation-delay: 4s; animation-duration: 6s; }
+.cpu-line-4 { offset-path: path("M 170 80 v -21.8 q 0 -5 -5 -5 h -65"); animation-delay: 3s; animation-duration: 3s; }
+.cpu-line-5 { offset-path: path("M 135 65 h 15 q 5 0 5 5 v 10 q 0 5 -5 5 h -39.8 q -5 0 -5 -5 v -35"); animation-delay: 9s; animation-duration: 4s; }
+.cpu-line-6 { offset-path: path("M 94.8 95 v -46"); animation-delay: 3s; animation-duration: 7s; }
+.cpu-line-7 { offset-path: path("M 88 88 v -15 q 0 -5 -5 -5 h -10 q -5 0 -5 -5 v -5 q 0 -5 5 -5 h 28"); animation-delay: 4s; animation-duration: 4s; }
+.cpu-line-8 { offset-path: path("M 30 30 h 25 q 5 0 5 5 v 6.5 q 0 5 5 5 h 35"); animation-delay: 3s; animation-duration: 3s; }
+@keyframes animation-path {
+  0%   { offset-distance: 0%;   }
+  100% { offset-distance: 100%; }
+}
