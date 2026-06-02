@@ -11,7 +11,7 @@ interface KPICardProps {
   icon?: string;
 }
 
-export default function KPICard({ variant = '', label, value, delta, icon = '★' }: KPICardProps) {
+export default function KPICard({ variant, label, value, delta, icon = '★' }: KPICardProps) {
   const classList = `${styles.kpi} ${variant ? styles[variant] : ''}`;
   const isDelta = delta.includes('+') ? 'up' : delta.includes('-') ? 'dn' : '';
 
