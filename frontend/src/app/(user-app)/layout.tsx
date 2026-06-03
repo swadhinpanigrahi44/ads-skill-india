@@ -1,6 +1,7 @@
 import { ReactNode } from "react";
 import { DashboardShell } from "@/components/dashboard/dashboard-shell";
 import { WithdrawalToast } from "@/components/dashboard/withdrawal-toast";
+import { SessionProvider } from "@/components/providers/session-provider";
 
 export const metadata = {
   title: "Dashboard — ADS Skill India",
@@ -9,9 +10,11 @@ export const metadata = {
 
 export default function UserAppLayout({ children }: { children: ReactNode }) {
   return (
-    <DashboardShell>
-      {children}
-      <WithdrawalToast />
-    </DashboardShell>
+    <SessionProvider>
+      <DashboardShell>
+        {children}
+        <WithdrawalToast />
+      </DashboardShell>
+    </SessionProvider>
   );
 }

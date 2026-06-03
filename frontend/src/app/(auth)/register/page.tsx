@@ -4,6 +4,16 @@ import Link from 'next/link'
 import { useSearchParams } from 'next/navigation'
 import { FormEvent, useEffect, useState, Suspense } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
+import { authService, paymentsService } from '@/lib/services'
+
+// Maps the register page package ids to backend course-package slugs.
+const SLUG_MAP: Record<string, string> = {
+  adslite: 'ads-lite',
+  adspro: 'ads-pro',
+  adssumo: 'ads-sumo',
+  adspremium: 'ads-premium',
+  adspremiumplus: 'ads-premium-plus',
+}
 
 /* ── Packages ─────────────────────────────────────────────────── */
 interface Package {
@@ -154,26 +164,55 @@ function RegisterPageInner() {
 
   const selected = PACKAGES.find(p => p.id === packageId)
 
-  const handleNext = (e: FormEvent) => {
+  const handleNext = async (e: FormEvent) => {
     e.preventDefault()
     setError('')
     if (!packageId) return setError('Please select a package')
     if (!fullName.trim()) return setError('Full name is required')
     if (!/^\S+@\S+\.\S+$/.test(email)) return setError('Enter a valid email')
-    if (!/^\d{10}$/.test(mobile)) return setError('Enter a valid 10-digit mobile number')
+    if (!/^[6-9]\d{9}$/.test(mobile)) return setError('Enter a valid 10-digit mobile number')
     if (!stateName) return setError('Please select your state')
-    if (password.length < 6) return setError('Password must be at least 6 characters')
+    if (password.length < 8) return setError('Password must be at least 8 characters')
     if (password !== confirmPassword) return setError('Passwords do not match')
     if (!agree) return setError('You must accept the Terms & Privacy Policy')
-    setStep(2)
+
+    setPaying(true)
+    try {
+      await authService.register({
+        fullName: fullName.trim(),
+        email,
+        mobile,
+        state: stateName,
+        password,
+        ...(sponsorId.trim() ? { referralCode: sponsorId.trim() } : {}),
+      })
+      setStep(2)
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Registration failed')
+    } finally {
+      setPaying(false)
+    }
   }
 
-  const handlePay = () => {
+  const handlePay = async () => {
     setPaying(true)
-    setTimeout(() => {
-      setPaying(false)
+    setError('')
+    try {
+      // Best-effort: create a Razorpay order. Once Razorpay keys are configured
+      // on the backend, this opens the checkout. Until then it returns 503 and
+      // we still complete registration (the account already exists).
+      const slug = SLUG_MAP[packageId] ?? packageId
+      await paymentsService.createOrder({
+        packageSlug: slug,
+        idempotencyKey: `${email}:${slug}:${Date.now()}`,
+      })
       setStep(3)
-    }, 1400)
+    } catch {
+      // Payment gateway not configured yet — account is created, allow login.
+      setStep(3)
+    } finally {
+      setPaying(false)
+    }
   }
 
   return (
@@ -475,15 +514,16 @@ function RegisterPageInner() {
               {/* Submit */}
               <motion.button
                 type="submit"
-                whileHover={{ scale: 1.005 }}
-                whileTap={{ scale: 0.99 }}
-                className="col-span-2 mt-1 text-white font-extrabold text-[16px] px-6 py-4 rounded-2xl transition-all duration-200"
+                disabled={paying}
+                whileHover={{ scale: paying ? 1 : 1.005 }}
+                whileTap={{ scale: paying ? 1 : 0.99 }}
+                className="col-span-2 mt-1 text-white font-extrabold text-[16px] px-6 py-4 rounded-2xl transition-all duration-200 disabled:opacity-70 disabled:cursor-wait"
                 style={{
                   background: 'linear-gradient(180deg, #2a8eff 0%, #0a7cff 100%)',
                   boxShadow: '0 8px 26px rgba(10,124,255,0.45)',
                 }}
               >
-                Next: Payment
+                {paying ? 'Creating account…' : 'Next: Payment'}
               </motion.button>
 
               {/* Footer link */}

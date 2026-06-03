@@ -3,17 +3,39 @@
 import Image from 'next/image'
 import Link from 'next/link'
 import { FormEvent, useState } from 'react'
+import { useRouter } from 'next/navigation'
 import { motion } from 'framer-motion'
+import { authService } from '@/lib/services'
+import { useAuthStore, AuthUser } from '@/store/authStore'
 
 export default function LoginPage() {
+  const router = useRouter()
+  const setAuth = useAuthStore((s) => s.setAuth)
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [showPassword, setShowPassword] = useState(false)
   const [remember, setRemember] = useState(false)
+  const [error, setError] = useState('')
+  const [loading, setLoading] = useState(false)
 
-  const handleSubmit = (e: FormEvent) => {
+  const handleSubmit = async (e: FormEvent) => {
     e.preventDefault()
-    // TODO: wire up auth
+    setError('')
+    setLoading(true)
+    try {
+      const { accessToken, user } = await authService.login({ email, password })
+      setAuth(accessToken, user as unknown as AuthUser)
+      // Send admins to the admin panel, regular users to the dashboard.
+      if (user.role === 'MASTER_ADMIN' || user.role === 'SUB_ADMIN') {
+        router.push('/admin-panel')
+      } else {
+        router.push('/dashboard')
+      }
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Login failed')
+    } finally {
+      setLoading(false)
+    }
   }
 
   return (
@@ -137,18 +159,23 @@ export default function LoginPage() {
             </Link>
           </div>
 
+          {error && (
+            <p className="text-red-400 text-[13px] font-semibold text-center -mb-2">{error}</p>
+          )}
+
           {/* Submit */}
           <motion.button
             type="submit"
-            whileHover={{ scale: 1.01 }}
-            whileTap={{ scale: 0.98 }}
-            className="w-full mt-2 text-white font-extrabold text-[16px] px-6 py-4 rounded-2xl transition-all duration-200"
+            disabled={loading}
+            whileHover={{ scale: loading ? 1 : 1.01 }}
+            whileTap={{ scale: loading ? 1 : 0.98 }}
+            className="w-full mt-2 text-white font-extrabold text-[16px] px-6 py-4 rounded-2xl transition-all duration-200 disabled:opacity-70 disabled:cursor-wait"
             style={{
               background: 'linear-gradient(180deg, #2a8eff 0%, #0a7cff 100%)',
               boxShadow: '0 8px 26px rgba(10,124,255,0.45)',
             }}
           >
-            Submit
+            {loading ? 'Logging in…' : 'Submit'}
           </motion.button>
 
           {/* Footer link */}
