@@ -3,6 +3,7 @@
 import { useEffect } from 'react';
 import { useAuthStore, AuthUser } from '@/store/authStore';
 import { userService } from '@/lib/services';
+import { setAuthHint, clearAuthHint } from '@/lib/session';
 
 /**
  * Rehydrates the in-memory auth store on mount / page refresh.
@@ -20,6 +21,7 @@ export function SessionProvider({ children }: { children: React.ReactNode }) {
   useEffect(() => {
     let cancelled = false;
     if (user) {
+      setAuthHint();
       setHydrated(true);
       return;
     }
@@ -28,9 +30,12 @@ export function SessionProvider({ children }: { children: React.ReactNode }) {
       .then((me) => {
         if (!cancelled) {
           setUser(me as unknown as AuthUser);
+          setAuthHint();
         }
       })
       .catch(() => {
+        // Session could not be restored (e.g. refresh cookie blocked/expired).
+        if (!cancelled) clearAuthHint();
         /* apiCall handles redirect to /login on hard auth failure */
       })
       .finally(() => {

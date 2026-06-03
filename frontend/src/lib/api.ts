@@ -57,6 +57,9 @@ export async function apiCall(endpoint: string, options: RequestInit = {}) {
       return retryResponse.json();
     }
     useAuthStore.getState().clearAuth();
+    if (typeof document !== 'undefined') {
+      document.cookie = 'auth_hint=; path=/; max-age=0; SameSite=Lax';
+    }
     if (typeof window !== 'undefined') window.location.href = '/login';
     throw new Error('Session expired. Please log in again.');
   }

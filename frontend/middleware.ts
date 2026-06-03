@@ -22,9 +22,11 @@ export function middleware(request: NextRequest) {
 
   if (isPublic) return NextResponse.next();
 
-  const userId = request.cookies.get('refresh_uid')?.value;
+  // First-party hint cookie set by the frontend after login. The backend's
+  // refresh cookie lives on a different domain and is invisible here.
+  const hasSession = request.cookies.get('auth_hint')?.value;
 
-  if (!userId) {
+  if (!hasSession) {
     return NextResponse.redirect(new URL('/login', request.url));
   }
 
@@ -33,8 +35,17 @@ export function middleware(request: NextRequest) {
 
 export const config = {
   matcher: [
-    '/user-app/:path*',
-    '/admin-panel/:path*',
     '/dashboard/:path*',
+    '/admin-panel/:path*',
+    '/withdraw/:path*',
+    '/courses/:path*',
+    '/team/:path*',
+    '/account/:path*',
+    '/ads/:path*',
+    '/settings/:path*',
+    '/leaderboard',
+    '/partner-program',
+    '/certificates',
+    '/support',
   ],
 };

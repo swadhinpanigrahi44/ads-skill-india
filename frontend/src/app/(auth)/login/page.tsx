@@ -7,6 +7,7 @@ import { useRouter } from 'next/navigation'
 import { motion } from 'framer-motion'
 import { authService } from '@/lib/services'
 import { useAuthStore, AuthUser } from '@/store/authStore'
+import { setAuthHint } from '@/lib/session'
 
 export default function LoginPage() {
   const router = useRouter()
@@ -25,6 +26,7 @@ export default function LoginPage() {
     try {
       const { accessToken, user } = await authService.login({ email, password })
       setAuth(accessToken, user as unknown as AuthUser)
+      setAuthHint() // first-party cookie so middleware lets us into protected routes
       // Send admins to the admin panel, regular users to the dashboard.
       if (user.role === 'MASTER_ADMIN' || user.role === 'SUB_ADMIN') {
         router.push('/admin-panel')
