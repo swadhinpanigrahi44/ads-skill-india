@@ -4,6 +4,7 @@ import { useState } from "react";
 import { Lock, KeyRound, Eye, EyeOff, Check } from "lucide-react";
 import { PageWrapper } from "@/components/dashboard/page-wrapper";
 import { Card } from "@/components/dashboard/card";
+import { authService } from "@/lib/services";
 
 export default function PasswordChangePage() {
   const [current, setCurrent] = useState("");
@@ -12,8 +13,9 @@ export default function PasswordChangePage() {
   const [show, setShow] = useState({ current: false, new: false, confirm: false });
   const [success, setSuccess] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [submitting, setSubmitting] = useState(false);
 
-  const submit = (e: React.FormEvent) => {
+  const submit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!current || !newPass || !confirm) {
       setError("Please fill in all fields.");
@@ -23,13 +25,24 @@ export default function PasswordChangePage() {
       setError("New passwords do not match.");
       return;
     }
-    if (newPass.length < 6) {
-      setError("Password must be at least 6 characters.");
+    if (newPass.length < 8) {
+      setError("Password must be at least 8 characters.");
       return;
     }
     setError(null);
-    setSuccess(true);
-    setTimeout(() => setSuccess(false), 2000);
+    setSubmitting(true);
+    try {
+      await authService.changePassword(current, newPass);
+      setSuccess(true);
+      setCurrent("");
+      setNewPass("");
+      setConfirm("");
+      setTimeout(() => setSuccess(false), 2500);
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Failed to change password");
+    } finally {
+      setSubmitting(false);
+    }
   };
 
   return (
@@ -76,7 +89,8 @@ export default function PasswordChangePage() {
 
           <button
             type="submit"
-            className="w-full text-white font-bold rounded-[10px] py-3 text-[14px] flex items-center justify-center gap-2 cursor-pointer hover:brightness-110 transition"
+            disabled={submitting}
+            className="w-full text-white font-bold rounded-[10px] py-3 text-[14px] flex items-center justify-center gap-2 cursor-pointer hover:brightness-110 transition disabled:opacity-60 disabled:cursor-not-allowed"
             style={{
               background: success
                 ? "#10b981"
