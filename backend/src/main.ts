@@ -20,7 +20,9 @@ function validateEnv(): void {
 
 async function bootstrap() {
   validateEnv();
-  const app = await NestFactory.create(AppModule);
+  // rawBody: true lets the Razorpay webhook verify the HMAC signature against
+  // the exact bytes received (req.rawBody), not a re-serialized JSON object.
+  const app = await NestFactory.create(AppModule, { rawBody: true });
 
   app.use(cookieParser());
   app.setGlobalPrefix('api');

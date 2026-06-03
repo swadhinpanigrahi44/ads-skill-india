@@ -5,6 +5,14 @@ import { APP_GUARD } from '@nestjs/core';
 import { PrismaModule } from './prisma/prisma.module';
 import { AuthModule } from './modules/auth/auth.module';
 import { UsersModule } from './modules/users/users.module';
+import { WalletModule } from './modules/wallet/wallet.module';
+import { CatalogModule } from './modules/catalog/catalog.module';
+import { ReferralsModule } from './modules/referrals/referrals.module';
+import { PaymentsModule } from './modules/payments/payments.module';
+import { AdsModule } from './modules/ads/ads.module';
+import { KycModule } from './modules/kyc/kyc.module';
+import { WithdrawalsModule } from './modules/withdrawals/withdrawals.module';
+import { AdminModule } from './modules/admin/admin.module';
 
 @Module({
   imports: [
@@ -19,6 +27,14 @@ import { UsersModule } from './modules/users/users.module';
     PrismaModule,
     AuthModule,
     UsersModule,
+    WalletModule,
+    CatalogModule,
+    ReferralsModule,
+    PaymentsModule,
+    AdsModule,
+    KycModule,
+    WithdrawalsModule,
+    AdminModule,
   ],
   providers: [
     {
