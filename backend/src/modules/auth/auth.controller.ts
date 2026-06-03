@@ -17,10 +17,15 @@ import { JwtAuthGuard } from './guards/jwt-auth.guard';
 import { RefreshGuard } from './guards/refresh.guard';
 import { CurrentUser } from '../../common/decorators/current-user.decorator';
 
+const IS_PROD = process.env.NODE_ENV === 'production';
+
+// In production the frontend (Vercel) and backend (Render) are different sites,
+// so cookies must be SameSite=None; Secure to be sent cross-site. Locally we use
+// 'lax' so cookies work over http://localhost.
 const REFRESH_COOKIE_OPTIONS = {
   httpOnly: true,
-  secure: process.env.NODE_ENV === 'production',
-  sameSite: 'strict' as const,
+  secure: IS_PROD,
+  sameSite: (IS_PROD ? 'none' : 'lax') as 'none' | 'lax',
   maxAge: 7 * 24 * 60 * 60 * 1000,
   path: '/',
 };
@@ -82,8 +87,18 @@ export class AuthController {
     @Res({ passthrough: true }) res: Response,
   ) {
     await this.authService.logout(user.id);
-    res.clearCookie('refresh_token', { path: '/', httpOnly: true });
-    res.clearCookie('refresh_uid', { path: '/', httpOnly: false });
+    res.clearCookie('refresh_token', {
+      path: '/',
+      httpOnly: true,
+      secure: IS_PROD,
+      sameSite: REFRESH_COOKIE_OPTIONS.sameSite,
+    });
+    res.clearCookie('refresh_uid', {
+      path: '/',
+      httpOnly: false,
+      secure: IS_PROD,
+      sameSite: REFRESH_COOKIE_OPTIONS.sameSite,
+    });
     return { success: true, data: { message: 'Logged out successfully' } };
   }
 
