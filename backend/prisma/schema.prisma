@@ -330,3 +330,21 @@ model AuditLog {
   @@index([action])
   @@index([createdAt])
 }
+
+// Individual course content. Cumulative unlock: a user unlocks a course when the
+// highest package they purchased has sortOrder >= the course's minTier.
+// minTier maps to CoursePackage.sortOrder (1=Lite, 2=Pro, 3=Sumo, 4=Premium, 5=Premium Plus).
+model Course {
+  id           String   @id @default(uuid())
+  title        String
+  slug         String   @unique
+  description  String?
+  thumbnailUrl String?
+  videoUrl     String?
+  minTier      Int      @default(1)
+  sortOrder    Int      @default(0)
+  isActive     Boolean  @default(true)
+  createdAt    DateTime @default(now())
+
+  @@index([minTier])
+}

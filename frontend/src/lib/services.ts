@@ -116,6 +116,28 @@ export const catalogService = {
   getPartnerTiers: () => api.get('/partner-tiers').then((r) => r.data as PartnerTier[]),
 };
 
+// ── Courses ─────────────────────────────────────────────────────
+export interface MyCourse {
+  id: string;
+  title: string;
+  slug: string;
+  description: string | null;
+  thumbnailUrl: string | null;
+  videoUrl: string | null;
+  minTier: number;
+  locked: boolean;
+}
+export interface MyCoursesResponse {
+  currentPackage: string | null;
+  maxTier: number;
+  unlockedCount: number;
+  totalCount: number;
+  courses: MyCourse[];
+}
+export const coursesService = {
+  getMy: () => api.get('/courses/my').then((r) => r.data as MyCoursesResponse),
+};
+
 // ── Referrals ───────────────────────────────────────────────────
 export const referralsService = {
   getMyLinks: () =>

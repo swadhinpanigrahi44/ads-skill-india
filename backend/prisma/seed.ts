@@ -32,6 +32,36 @@ const PARTNER_TIERS = [
   { name: 'Elite Partner', slug: 'elite-partner', price: 999900, downlineAdsPercent: 30, sortOrder: 4, l1Pct: 0.2, l2Pct: 0.07 },
 ];
 
+// ── Courses (placeholder content) ────────────────────────────────
+// minTier maps to package sortOrder. Cumulative: a user with package sortOrder N
+// unlocks every course with minTier <= N.
+const SAMPLE_VIDEO = 'https://www.youtube.com/embed/dQw4w9WgXcQ';
+const COURSES = [
+  // Tier 1 — Ads Lite
+  { title: 'Digital Marketing Foundations', minTier: 1 },
+  { title: 'Social Media Basics', minTier: 1 },
+  { title: 'Introduction to Affiliate Marketing', minTier: 1 },
+  { title: 'Building Your Personal Brand', minTier: 1 },
+  { title: 'Content Creation 101', minTier: 1 },
+  // Tier 2 — Ads Pro
+  { title: 'Facebook & Instagram Ads', minTier: 2 },
+  { title: 'WhatsApp Marketing Mastery', minTier: 2 },
+  { title: 'Lead Generation Strategies', minTier: 2 },
+  // Tier 3 — Ads Sumo
+  { title: 'Advanced Funnel Building', minTier: 3 },
+  { title: 'Email Marketing Automation', minTier: 3 },
+  // Tier 4 — Ads Premium
+  { title: 'Google Ads & SEO', minTier: 4 },
+  { title: 'YouTube Channel Growth', minTier: 4 },
+  // Tier 5 — Ads Premium Plus
+  { title: 'Scaling to 6 Figures', minTier: 5 },
+  { title: 'Team Building & Leadership', minTier: 5 },
+  { title: 'Business Automation Systems', minTier: 5 },
+];
+
+const slugify = (s: string) =>
+  s.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '');
+
 async function main() {
   console.log('Seeding course packages...');
   for (const pkg of COURSE_PACKAGES) {
@@ -95,6 +125,24 @@ async function main() {
         });
       }
     }
+  }
+
+  console.log('Seeding courses...');
+  for (let i = 0; i < COURSES.length; i++) {
+    const c = COURSES[i];
+    const slug = slugify(c.title);
+    await prisma.course.upsert({
+      where: { slug },
+      create: {
+        title: c.title,
+        slug,
+        description: `${c.title} — full course content coming soon.`,
+        videoUrl: SAMPLE_VIDEO,
+        minTier: c.minTier,
+        sortOrder: i + 1,
+      },
+      update: { title: c.title, minTier: c.minTier, sortOrder: i + 1 },
+    });
   }
 
   console.log('Seed complete.');

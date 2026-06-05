@@ -7,6 +7,7 @@ import { AuthModule } from './modules/auth/auth.module';
 import { UsersModule } from './modules/users/users.module';
 import { WalletModule } from './modules/wallet/wallet.module';
 import { CatalogModule } from './modules/catalog/catalog.module';
+import { CoursesModule } from './modules/courses/courses.module';
 import { ReferralsModule } from './modules/referrals/referrals.module';
 import { PaymentsModule } from './modules/payments/payments.module';
 import { AdsModule } from './modules/ads/ads.module';
@@ -29,6 +30,7 @@ import { AdminModule } from './modules/admin/admin.module';
     UsersModule,
     WalletModule,
     CatalogModule,
+    CoursesModule,
     ReferralsModule,
     PaymentsModule,
     AdsModule,
