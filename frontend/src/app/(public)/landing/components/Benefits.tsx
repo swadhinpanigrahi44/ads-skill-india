@@ -29,10 +29,10 @@ export default function Benefits() {
       />
 
       <div className="relative z-10 max-w-[1280px] mx-auto px-5 sm:px-8 lg:px-12">
-        <div className="flex flex-col lg:flex-row items-center gap-12 lg:gap-16">
+        <div className="flex flex-col lg:flex-row items-center lg:items-stretch gap-12 lg:gap-16">
 
           {/* LEFT — text content */}
-          <div className="flex-1 max-w-[560px]">
+          <div className="flex-1 max-w-[560px] flex flex-col justify-center">
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               whileInView={{ opacity: 1, y: 0 }}
@@ -94,10 +94,10 @@ export default function Benefits() {
             whileInView={{ opacity: 1, x: 0 }}
             viewport={{ once: true, margin: '-80px' }}
             transition={{ duration: 0.7, delay: 0.1 }}
-            className="flex-1 relative flex justify-center lg:justify-end"
+            className="flex-1 w-full relative flex"
           >
             <div
-              className="relative rounded-2xl overflow-hidden"
+              className="relative rounded-2xl overflow-hidden w-full min-h-[300px] sm:min-h-[360px] lg:min-h-0"
               style={{
                 background: 'linear-gradient(135deg, #0a1535 0%, #0d1e44 100%)',
                 border: '1px solid rgba(0,102,255,0.12)',
@@ -106,9 +106,9 @@ export default function Benefits() {
               <Image
                 src="/images/benefit/685d22b68802a1750934198.png"
                 alt="Affiliate marketer"
-                width={460}
-                height={480}
-                className="w-full max-w-[460px] h-auto object-cover rounded-2xl"
+                fill
+                sizes="(max-width: 1024px) 100vw, 560px"
+                className="object-cover rounded-2xl"
                 style={{ filter: 'drop-shadow(0 12px 32px rgba(0,40,200,0.25))' }}
               />
             </div>

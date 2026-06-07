@@ -77,12 +77,26 @@ export default function HowItWorks() {
                 {/* Curved dashed connector arrow between steps */}
                 {i < STEPS.length - 1 && (
                   <svg
-                    className="hidden md:block absolute top-[44px] left-1/2 z-10 text-[#3b8aff]/45 overflow-visible"
-                    width="180" height="60" viewBox="0 0 180 60" fill="none"
-                    style={{ transform: 'translateX(40px)' }}
+                    className="hidden md:block absolute top-[40px] left-1/2 z-10 text-[#3b8aff]/55 overflow-visible"
+                    width="190" height="70" viewBox="0 0 190 70" fill="none"
+                    style={{ transform: 'translateX(44px)' }}
                   >
-                    <path d="M2 12 C 60 56, 120 56, 174 16" stroke="currentColor" strokeWidth="2" strokeDasharray="3 6" strokeLinecap="round" />
-                    <path d="M168 6 L 176 16 L 164 20" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" fill="none" />
+                    <path
+                      d="M4 16 C 64 64, 122 64, 176 20"
+                      stroke="currentColor"
+                      strokeWidth="2.2"
+                      strokeDasharray="2 7"
+                      strokeLinecap="round"
+                    />
+                    {/* Arrowhead at the end of the curve (tip ~176,20) */}
+                    <path
+                      d="M163 11 L 178 20 L 165 30"
+                      stroke="currentColor"
+                      strokeWidth="2.2"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      fill="none"
+                    />
                   </svg>
                 )}
 
