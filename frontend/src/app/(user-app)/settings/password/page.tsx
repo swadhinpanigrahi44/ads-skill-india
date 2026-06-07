@@ -5,6 +5,8 @@ import { Lock, KeyRound, Eye, EyeOff, Check } from "lucide-react";
 import { PageWrapper } from "@/components/dashboard/page-wrapper";
 import { Card } from "@/components/dashboard/card";
 import { authService } from "@/lib/services";
+import { isPasswordValid } from "@/lib/password";
+import { PasswordChecklist } from "@/components/auth/password-checklist";
 
 export default function PasswordChangePage() {
   const [current, setCurrent] = useState("");
@@ -25,8 +27,8 @@ export default function PasswordChangePage() {
       setError("New passwords do not match.");
       return;
     }
-    if (newPass.length < 8) {
-      setError("Password must be at least 8 characters.");
+    if (!isPasswordValid(newPass)) {
+      setError("Password must be 8+ characters with an uppercase, lowercase, number & symbol.");
       return;
     }
     setError(null);
@@ -73,6 +75,11 @@ export default function PasswordChangePage() {
             show={show.new}
             onToggle={() => setShow((s) => ({ ...s, new: !s.new }))}
           />
+          {newPass && (
+            <div className="-mt-2 mb-4">
+              <PasswordChecklist password={newPass} />
+            </div>
+          )}
           <PasswordField
             label="Confirm New Password"
             value={confirm}

@@ -5,6 +5,7 @@ import Link from 'next/link'
 import { FormEvent, useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { motion } from 'framer-motion'
+import { Eye, EyeOff } from 'lucide-react'
 import { authService } from '@/lib/services'
 import { useAuthStore, AuthUser } from '@/store/authStore'
 import { setAuthHint } from '@/lib/session'
@@ -103,7 +104,7 @@ export default function LoginPage() {
               required
               value={email}
               onChange={e => setEmail(e.target.value)}
-              className="w-full bg-black border border-transparent rounded-xl px-4 py-4 text-white text-[14px] placeholder:text-gray-700 focus:outline-none focus:border-[#0a7cff60] transition-colors"
+              className="w-full bg-black border border-transparent rounded-xl px-4 py-4 text-white text-[14px] placeholder:text-gray-700 focus:outline-none focus:border-[#0a7cff] focus:ring-2 focus:ring-[#0a7cff]/30 transition-all"
             />
           </div>
 
@@ -124,7 +125,7 @@ export default function LoginPage() {
                 required
                 value={password}
                 onChange={e => setPassword(e.target.value)}
-                className="w-full bg-black border border-transparent rounded-xl px-4 py-4 pr-12 text-white text-[14px] placeholder:text-gray-700 focus:outline-none focus:border-[#0a7cff60] transition-colors"
+                className="w-full bg-black border border-transparent rounded-xl px-4 py-4 pr-12 text-white text-[14px] placeholder:text-gray-700 focus:outline-none focus:border-[#0a7cff] focus:ring-2 focus:ring-[#0a7cff]/30 transition-all"
               />
               <button
                 type="button"
@@ -132,12 +133,7 @@ export default function LoginPage() {
                 aria-label="Toggle password visibility"
                 className="absolute inset-y-0 right-3 flex items-center text-gray-500 hover:text-white transition-colors"
               >
-                <lord-icon
-                  src={showPassword ? "https://cdn.lordicon.com/dicvvczd.json" : "https://cdn.lordicon.com/dmvvtziq.json"}
-                  trigger="hover"
-                  colors="primary:#999999"
-                  style={{ width: '20px', height: '20px' }}
-                />
+                {showPassword ? <EyeOff size={20} /> : <Eye size={20} />}
               </button>
             </div>
           </div>

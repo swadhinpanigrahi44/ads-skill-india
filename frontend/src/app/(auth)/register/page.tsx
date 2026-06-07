@@ -4,7 +4,10 @@ import Link from 'next/link'
 import { useSearchParams } from 'next/navigation'
 import { FormEvent, useEffect, useState, Suspense } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
+import { Eye, EyeOff } from 'lucide-react'
 import { authService, paymentsService } from '@/lib/services'
+import { isPasswordValid } from '@/lib/password'
+import { PasswordChecklist } from '@/components/auth/password-checklist'
 
 // Maps the register page package ids to backend course-package slugs.
 const SLUG_MAP: Record<string, string> = {
@@ -24,9 +27,9 @@ interface Package {
 }
 
 const PACKAGES: Package[] = [
-  { id: 'adslite',        name: 'Ads.lite',      amount: 1495,  blurb: '5 Courses · Lifetime' },
-  { id: 'adspro',         name: 'AdsPro',        amount: 2999,  blurb: '8 Courses · Lifetime · Most Popular' },
-  { id: 'adssumo',        name: 'AdsSumo',       amount: 5999,  blurb: '10 Courses · Lifetime' },
+  { id: 'adslite',        name: 'AdsLite',      amount: 1495,  blurb: '4 Courses · Lifetime' },
+  { id: 'adspro',         name: 'AdsPro',        amount: 2999,  blurb: '6 Courses · Lifetime · Most Popular' },
+  { id: 'adssumo',        name: 'AdsSupreme',    amount: 5999,  blurb: '9 Courses · Lifetime' },
   { id: 'adspremium',     name: 'AdsPremium',    amount: 9999,  blurb: '12 Courses · Lifetime' },
   { id: 'adspremiumplus', name: 'AdsPremium+',   amount: 15999, blurb: '15 Courses · Lifetime' },
 ]
@@ -67,7 +70,7 @@ function Field({
 }
 
 const inputCls =
-  'w-full bg-[#0c1426] border border-[#1a2540] rounded-xl px-4 py-3.5 text-white text-[14px] placeholder:text-gray-500 focus:outline-none focus:border-[#0a7cff80] transition-colors'
+  'w-full bg-[#0c1426] border border-[#1a2540] rounded-xl px-4 py-3.5 text-white text-[14px] placeholder:text-gray-500 focus:outline-none focus:border-[#0a7cff] focus:ring-2 focus:ring-[#0a7cff]/30 transition-all'
 
 /* ── Stepper (matches screenshot exactly) ─────────────────────── */
 function Stepper({ step }: { step: 1 | 2 | 3 }) {
@@ -160,6 +163,9 @@ function RegisterPageInner() {
   const [confirmPassword, setConfirmPassword] = useState('')
   const [agree, setAgree] = useState(false)
   const [error, setError] = useState('')
+  const [packageError, setPackageError] = useState('')
+  const [showPassword, setShowPassword] = useState(false)
+  const [showConfirm, setShowConfirm] = useState(false)
   const [paying, setPaying] = useState(false)
 
   const selected = PACKAGES.find(p => p.id === packageId)
@@ -167,14 +173,32 @@ function RegisterPageInner() {
   const handleNext = async (e: FormEvent) => {
     e.preventDefault()
     setError('')
-    if (!packageId) return setError('Please select a package')
-    if (!fullName.trim()) return setError('Full name is required')
-    if (!/^\S+@\S+\.\S+$/.test(email)) return setError('Enter a valid email')
-    if (!/^[6-9]\d{9}$/.test(mobile)) return setError('Enter a valid 10-digit mobile number')
-    if (!stateName) return setError('Please select your state')
-    if (password.length < 8) return setError('Password must be at least 8 characters')
-    if (password !== confirmPassword) return setError('Passwords do not match')
-    if (!agree) return setError('You must accept the Terms & Privacy Policy')
+    setPackageError('')
+
+    let ok = true
+    if (!packageId) {
+      setPackageError('Choose a package to get started')
+      ok = false
+    }
+
+    let msg = ''
+    if (!fullName.trim()) msg = 'Full name is required'
+    else if (!/^\S+@\S+\.\S+$/.test(email)) msg = 'Enter a valid email address'
+    else if (!/^[6-9]\d{9}$/.test(mobile)) msg = 'Enter a valid 10-digit mobile number'
+    else if (!stateName) msg = 'Please select your state'
+    else if (!isPasswordValid(password))
+      msg = 'Password must be 8+ characters with an uppercase, lowercase, number & symbol'
+    else if (password !== confirmPassword) msg = 'Passwords do not match'
+    else if (!agree) msg = 'You must accept the Terms & Privacy Policy'
+
+    if (msg) {
+      setError(msg)
+      ok = false
+    } else if (!ok) {
+      // package missing but all other fields fine
+      setError('Please choose a package to continue')
+    }
+    if (!ok) return
 
     setPaying(true)
     try {
@@ -274,10 +298,10 @@ function RegisterPageInner() {
                   <select
                     required
                     value={packageId}
-                    onChange={e => setPackageId(e.target.value)}
-                    className={`${inputCls} appearance-none pr-10 cursor-pointer`}
+                    onChange={e => { setPackageId(e.target.value); setPackageError('') }}
+                    className={`${inputCls} appearance-none pr-10 cursor-pointer ${packageError ? 'border-red-500 focus:border-red-500 focus:ring-red-500/30' : ''}`}
                   >
-                    <option value="" disabled></option>
+                    <option value="" disabled>-- Select a package --</option>
                     {PACKAGES.map(p => (
                       <option key={p.id} value={p.id}>
                         {p.name} — ₹{p.amount.toLocaleString('en-IN')} · {p.blurb}
@@ -291,6 +315,9 @@ function RegisterPageInner() {
                     <path strokeLinecap="round" strokeLinejoin="round" d="M19 9l-7 7-7-7" />
                   </svg>
                 </div>
+                {packageError && (
+                  <p className="text-red-500 text-[12.5px] font-semibold mt-2">{packageError}</p>
+                )}
               </Field>
 
               {/* Sponsor ID */}
@@ -455,14 +482,25 @@ function RegisterPageInner() {
                   />
                 }
               >
-                <input
-                  type="password"
-                  required
-                  value={password}
-                  onChange={e => setPassword(e.target.value)}
-                  placeholder="Enter password"
-                  className={inputCls}
-                />
+                <div className="relative">
+                  <input
+                    type={showPassword ? 'text' : 'password'}
+                    required
+                    value={password}
+                    onChange={e => setPassword(e.target.value)}
+                    placeholder="Enter password"
+                    className={`${inputCls} pr-11`}
+                  />
+                  <button
+                    type="button"
+                    onClick={() => setShowPassword(s => !s)}
+                    aria-label="Toggle password visibility"
+                    className="absolute inset-y-0 right-3 flex items-center text-gray-400 hover:text-white transition-colors"
+                  >
+                    {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+                  </button>
+                </div>
+                {password && <PasswordChecklist password={password} />}
               </Field>
 
               {/* Confirm */}
@@ -479,14 +517,27 @@ function RegisterPageInner() {
                   />
                 }
               >
-                <input
-                  type="password"
-                  required
-                  value={confirmPassword}
-                  onChange={e => setConfirmPassword(e.target.value)}
-                  placeholder="Confirm your password"
-                  className={inputCls}
-                />
+                <div className="relative">
+                  <input
+                    type={showConfirm ? 'text' : 'password'}
+                    required
+                    value={confirmPassword}
+                    onChange={e => setConfirmPassword(e.target.value)}
+                    placeholder="Confirm your password"
+                    className={`${inputCls} pr-11`}
+                  />
+                  <button
+                    type="button"
+                    onClick={() => setShowConfirm(s => !s)}
+                    aria-label="Toggle password visibility"
+                    className="absolute inset-y-0 right-3 flex items-center text-gray-400 hover:text-white transition-colors"
+                  >
+                    {showConfirm ? <EyeOff size={18} /> : <Eye size={18} />}
+                  </button>
+                </div>
+                {confirmPassword && confirmPassword !== password && (
+                  <p className="text-red-500 text-[12px] font-semibold mt-1.5">Passwords do not match</p>
+                )}
               </Field>
 
               {/* Agree */}
