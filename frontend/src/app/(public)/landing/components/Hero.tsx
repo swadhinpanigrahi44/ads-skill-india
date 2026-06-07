@@ -189,7 +189,7 @@ export default function Hero() {
               {/* Description */}
               <motion.p
                 {...fadeUp(0.28)}
-                className="text-gray-400 text-[14px] leading-[1.75] max-w-[420px] mb-6"
+                className="text-gray-300 text-[16px] font-medium leading-[1.8] max-w-[440px] mb-6"
               >
                 Affiliate is perfect for grow your business &amp; you can earn a
                 lot of money by affiliate marketing, we all time ready for you
@@ -219,9 +219,9 @@ export default function Hero() {
                 >
                   <Link
                     href="/register"
-                    className="inline-flex items-center gap-2.5 bg-[#0066ff] hover:bg-[#0055ee] text-white font-extrabold text-[15px] px-8 py-4 rounded-full transition-all duration-200 shadow-[0_4px_28px_rgba(0,102,255,0.45)] hover:shadow-[0_6px_36px_rgba(0,102,255,0.65)] group"
+                    className="inline-flex items-center gap-2.5 bg-[#0066ff] hover:bg-[#0055ee] text-white font-extrabold text-[17px] px-9 py-4 rounded-full transition-all duration-200 shadow-[0_4px_28px_rgba(0,102,255,0.45)] hover:shadow-[0_6px_36px_rgba(0,102,255,0.65)] group"
                   >
-                    <ShiningText text="Become an Affiliate" colorBase="#8ab4ff" colorMid="#c0d8ff" colorShine="#ffffff" className="font-extrabold" />
+                    <ShiningText text="Become an Affiliate" colorBase="#8ab4ff" colorMid="#c0d8ff" colorShine="#ffffff" className="font-extrabold text-[17px]" />
                     <svg
                       className="w-3.5 h-3.5 transition-transform duration-200 group-hover:translate-x-1"
                       fill="none"

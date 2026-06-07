@@ -2,6 +2,7 @@
 
 import Link from 'next/link'
 import { motion } from 'framer-motion'
+import { Sprout, Rocket, Crown, Star } from 'lucide-react'
 import { ShiningText } from '@/components/ui/shining-text'
 
 interface Course {
@@ -16,21 +17,23 @@ interface Course {
   popular?: boolean
 }
 
+const FEATURES = [
+  'Lifetime course access',
+  'Completion certificate',
+  'Expert instructors',
+  'Study materials included',
+]
+
 const COURSES: Course[] = [
   {
     id: 'adslite',
-    name: 'Ads.lite',
+    name: 'AdsLite',
     price: '1,495.00',
     period: '/lifetime',
     access: 'Lifetime Access',
-    courses: '5 Courses',
-    hasCert: false,
-    features: [
-      'Lifetime course access',
-      'Completion certificate',
-      'Expert Instructors',
-      'Study materials included',
-    ],
+    courses: '4 Courses',
+    hasCert: true,
+    features: FEATURES,
   },
   {
     id: 'adspro',
@@ -38,30 +41,20 @@ const COURSES: Course[] = [
     price: '2,999.00',
     period: '/lifetime',
     access: 'Lifetime Access',
-    courses: '8 Courses',
+    courses: '6 Courses',
     hasCert: true,
     popular: true,
-    features: [
-      'Lifetime course access',
-      'Completion certificate',
-      'Expert Instructors',
-      'Study materials included',
-    ],
+    features: FEATURES,
   },
   {
     id: 'adssumo',
-    name: 'AdsSumo',
+    name: 'AdsSupreme',
     price: '5,999.00',
     period: '/lifetime',
     access: 'Lifetime Access',
-    courses: '10 Courses',
+    courses: '9 Courses',
     hasCert: true,
-    features: [
-      'Lifetime course access',
-      'Completion certificate',
-      'Expert Instructors',
-      'Study materials included',
-    ],
+    features: FEATURES,
   },
   {
     id: 'adspremium',
@@ -71,12 +64,7 @@ const COURSES: Course[] = [
     access: 'Lifetime Access',
     courses: '12 Courses',
     hasCert: true,
-    features: [
-      'Lifetime course access',
-      'Completion certificate',
-      'Expert Instructors',
-      'Study materials included',
-    ],
+    features: FEATURES,
   },
   {
     id: 'adspremiumplus',
@@ -86,61 +74,36 @@ const COURSES: Course[] = [
     access: 'Lifetime Access',
     courses: '15 Courses',
     hasCert: true,
-    features: [
-      'Lifetime course access',
-      'Completion certificate',
-      'Expert Instructors',
-      'Study materials included',
-    ],
+    features: FEATURES,
   },
 ]
 
-/* Per-card icon + accent color */
+/* Per-card icon + accent color — matches the pricing reference */
 const CARD_META: Record<string, { color: string; bg: string; icon: React.ReactNode }> = {
   adslite: {
-    color: '#60a5fa',
-    bg: 'rgba(96,165,250,0.15)',
-    icon: (
-      <svg className="w-5 h-5" viewBox="0 0 24 24" fill="currentColor">
-        <path d="M13 2L4.09 12.26A1 1 0 005 14h6v8l8.91-10.26A1 1 0 0019 10h-6V2z" />
-      </svg>
-    ),
+    color: '#34d399',
+    bg: 'rgba(52,211,153,0.15)',
+    icon: <Sprout className="w-5 h-5" strokeWidth={2.2} />,
   },
   adspro: {
-    color: '#818cf8',
-    bg: 'rgba(129,140,248,0.15)',
-    icon: (
-      <svg className="w-5 h-5" viewBox="0 0 24 24" fill="currentColor">
-        <path d="M4.5 6.375a4.125 4.125 0 118.25 0 4.125 4.125 0 01-8.25 0zM14.25 8.625a3.375 3.375 0 116.75 0 3.375 3.375 0 01-6.75 0zM1.5 19.125a7.125 7.125 0 0114.25 0v.003l-.001.119a.75.75 0 01-.363.63 13.067 13.067 0 01-6.761 1.873c-2.472 0-4.786-.684-6.76-1.873a.75.75 0 01-.364-.63l-.001-.122zM17.25 19.128l-.001.144a2.25 2.25 0 01-.233.96 10.088 10.088 0 005.06-1.01.75.75 0 00.42-.643 4.875 4.875 0 00-6.957-4.611 8.586 8.586 0 011.71 5.157v.003z" />
-      </svg>
-    ),
+    color: '#3b8aff',
+    bg: 'rgba(59,138,255,0.16)',
+    icon: <Rocket className="w-5 h-5" strokeWidth={2.2} />,
   },
   adssumo: {
-    color: '#f59e0b',
-    bg: 'rgba(245,158,11,0.15)',
-    icon: (
-      <svg className="w-5 h-5" viewBox="0 0 24 24" fill="currentColor">
-        <path fillRule="evenodd" d="M5.166 2.621v.858c-1.035.148-2.059.33-3.071.543a.75.75 0 00-.584.859 6.753 6.753 0 006.138 5.6 6.73 6.73 0 002.743 1.346A6.707 6.707 0 019.279 15H8.54c-1.036 0-1.875.84-1.875 1.875V19.5h-.75a2.25 2.25 0 000 4.5h9.75a2.25 2.25 0 000-4.5h-.75v-2.625c0-1.036-.84-1.875-1.875-1.875h-.739a6.706 6.706 0 01-1.112-3.173 6.73 6.73 0 002.743-1.347 6.753 6.753 0 006.139-5.6.75.75 0 00-.585-.858 47.077 47.077 0 00-3.07-.543V2.62a.75.75 0 00-.658-.744 49.798 49.798 0 00-6.093-.377.75.75 0 00-.657.744zm0 2.629c0 1.196.312 2.32.857 3.294A5.266 5.266 0 013.16 5.337a45.6 45.6 0 012.006-.343v.256zm13.5 0v-.256c.674.1 1.343.214 2.006.343a5.265 5.265 0 01-2.863 3.207 6.72 6.72 0 00.857-3.294z" clipRule="evenodd" />
-      </svg>
-    ),
+    color: '#fbbf24',
+    bg: 'rgba(251,191,36,0.16)',
+    icon: <Crown className="w-5 h-5" strokeWidth={2.2} />,
   },
   adspremium: {
     color: '#a78bfa',
-    bg: 'rgba(167,139,250,0.15)',
-    icon: (
-      <svg className="w-5 h-5" viewBox="0 0 24 24" fill="currentColor">
-        <path d="M11.645 20.91l-.007-.003-.022-.012a15.247 15.247 0 01-.383-.218 25.18 25.18 0 01-4.244-3.17C4.688 15.36 2.25 12.174 2.25 8.25 2.25 5.322 4.714 3 7.688 3A5.5 5.5 0 0112 5.052 5.5 5.5 0 0116.313 3c2.973 0 5.437 2.322 5.437 5.25 0 3.925-2.438 7.111-4.739 9.256a25.175 25.175 0 01-4.244 3.17 15.247 15.247 0 01-.383.219l-.022.012-.007.004-.003.001a.752.752 0 01-.704 0l-.003-.001z" />
-      </svg>
-    ),
+    bg: 'rgba(167,139,250,0.16)',
+    icon: <Star className="w-5 h-5" strokeWidth={2.2} fill="currentColor" />,
   },
   adspremiumplus: {
     color: '#f472b6',
-    bg: 'rgba(244,114,182,0.15)',
-    icon: (
-      <svg className="w-5 h-5" viewBox="0 0 24 24" fill="currentColor">
-        <path fillRule="evenodd" d="M10.788 3.21c.448-1.077 1.976-1.077 2.424 0l2.082 5.007 5.404.433c1.164.093 1.636 1.545.749 2.305l-4.117 3.527 1.257 5.273c.271 1.136-.964 2.033-1.96 1.425L12 18.354 7.373 21.18c-.996.608-2.231-.29-1.96-1.425l1.257-5.273-4.117-3.527c-.887-.76-.415-2.212.749-2.305l5.404-.433 2.082-5.006z" clipRule="evenodd" />
-      </svg>
-    ),
+    bg: 'rgba(244,114,182,0.16)',
+    icon: <Star className="w-5 h-5" strokeWidth={2.2} fill="currentColor" />,
   },
 }
 
@@ -192,7 +155,7 @@ export default function Courses() {
             <span className="block w-7 h-px bg-[#0066ff]" />
           </div>
           <h2 className="text-white font-black text-[clamp(2rem,4.5vw,3rem)] mb-4">Our Courses</h2>
-          <p className="text-gray-400 text-[14px] max-w-[460px] mx-auto leading-[1.7]">
+          <p className="text-gray-300 text-[16px] font-medium max-w-[480px] mx-auto leading-[1.75]">
             Choose a plan to unlock premium courses and earn industry-recognized certificates.
           </p>
         </motion.div>
@@ -245,7 +208,7 @@ export default function Courses() {
                   {meta.icon}
                 </div>
 
-                <p className="text-white font-bold text-[15px] mb-2">{course.name}</p>
+                <p className="text-white font-extrabold text-[18px] mb-2">{course.name}</p>
 
                 {/* Price */}
                 <div className="mb-3">
@@ -294,10 +257,10 @@ export default function Courses() {
                 <motion.div whileTap={{ scale: 0.97 }}>
                   <Link
                     href={`/register?plan=${course.id}`}
-                    className="flex items-center justify-center gap-2 bg-[#0066ff] hover:bg-[#0055ee] text-white font-extrabold text-[14.5px] px-5 py-3 rounded-xl transition-all duration-200 shadow-[0_4px_16px_rgba(0,102,255,0.35)]"
+                    className="flex items-center justify-center gap-2 bg-[#0066ff] hover:bg-[#0055ee] text-white font-extrabold text-[16px] px-5 py-3.5 rounded-xl transition-all duration-200 shadow-[0_4px_16px_rgba(0,102,255,0.35)]"
                   >
                     <AnimatedUserIcon />
-                    <ShiningText text="Get Started" colorBase="#8ab4ff" colorMid="#c0d8ff" colorShine="#ffffff" className="font-extrabold" />
+                    <ShiningText text="Get Started" colorBase="#8ab4ff" colorMid="#c0d8ff" colorShine="#ffffff" className="font-extrabold text-[16px]" />
                   </Link>
                 </motion.div>
               </motion.div>
@@ -316,7 +279,7 @@ export default function Courses() {
           <motion.div whileHover={{ scale: 1.04 }} whileTap={{ scale: 0.97 }} className="inline-block">
             <Link
               href="#"
-              className="inline-flex items-center gap-2.5 bg-[#0066ff] hover:bg-[#0055ee] text-white font-bold text-[13px] px-7 py-3.5 rounded-full transition-all duration-200 shadow-[0_4px_24px_rgba(0,102,255,0.4)] group"
+              className="inline-flex items-center gap-2.5 bg-[#0066ff] hover:bg-[#0055ee] text-white font-bold text-[15px] px-8 py-4 rounded-full transition-all duration-200 shadow-[0_4px_24px_rgba(0,102,255,0.4)] group"
             >
               <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={2.5}>
                 <path strokeLinecap="round" strokeLinejoin="round" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />

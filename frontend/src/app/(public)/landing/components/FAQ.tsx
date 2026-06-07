@@ -71,7 +71,7 @@ export default function FAQ() {
           <h2 className="text-white font-black text-[clamp(2rem,4.5vw,3rem)] mb-4">
             Frequently Asked Questions
           </h2>
-          <p className="text-gray-400 text-[14px] max-w-[440px] mx-auto leading-[1.7]">
+          <p className="text-gray-300 text-[16px] font-medium max-w-[460px] mx-auto leading-[1.75]">
             Get quick answers to common questions about affiliate marketing and how our
             platform works.
           </p>
@@ -116,7 +116,7 @@ export default function FAQ() {
                     transition={{ duration: 0.28, ease: 'easeInOut' }}
                     className="overflow-hidden"
                   >
-                    <p className="px-5 pb-4 text-gray-400 text-[13px] leading-[1.7]">{faq.a}</p>
+                    <p className="px-5 pb-4 text-gray-300 text-[15px] leading-[1.7]">{faq.a}</p>
                   </motion.div>
                 )}
               </AnimatePresence>

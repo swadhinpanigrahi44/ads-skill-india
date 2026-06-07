@@ -17,7 +17,7 @@ const prisma = new PrismaClient({ adapter });
 const COURSE_PACKAGES = [
   { name: 'Ads Lite', slug: 'ads-lite', price: 149500, sortOrder: 1 },
   { name: 'Ads Pro', slug: 'ads-pro', price: 299900, sortOrder: 2 },
-  { name: 'Ads Sumo', slug: 'ads-sumo', price: 599900, sortOrder: 3 },
+  { name: 'Ads Supreme', slug: 'ads-sumo', price: 599900, sortOrder: 3 },
   { name: 'Ads Premium', slug: 'ads-premium', price: 999900, sortOrder: 4 },
   { name: 'Ads Premium Plus', slug: 'ads-premium-plus', price: 1599900, sortOrder: 5 },
 ];
@@ -36,24 +36,26 @@ const PARTNER_TIERS = [
 // minTier maps to package sortOrder. Cumulative: a user with package sortOrder N
 // unlocks every course with minTier <= N.
 const SAMPLE_VIDEO = 'https://www.youtube.com/embed/dQw4w9WgXcQ';
+// Distribution gives cumulative unlock counts of 4 / 6 / 9 / 12 / 15
+// (Lite / Pro / Supreme / Premium / Premium Plus).
 const COURSES = [
-  // Tier 1 — Ads Lite
+  // Tier 1 — Ads Lite (4 courses)
   { title: 'Digital Marketing Foundations', minTier: 1 },
   { title: 'Social Media Basics', minTier: 1 },
   { title: 'Introduction to Affiliate Marketing', minTier: 1 },
   { title: 'Building Your Personal Brand', minTier: 1 },
-  { title: 'Content Creation 101', minTier: 1 },
-  // Tier 2 — Ads Pro
+  // Tier 2 — Ads Pro (+2 = 6)
+  { title: 'Content Creation 101', minTier: 2 },
   { title: 'Facebook & Instagram Ads', minTier: 2 },
-  { title: 'WhatsApp Marketing Mastery', minTier: 2 },
-  { title: 'Lead Generation Strategies', minTier: 2 },
-  // Tier 3 — Ads Sumo
+  // Tier 3 — Ads Supreme (+3 = 9)
+  { title: 'WhatsApp Marketing Mastery', minTier: 3 },
+  { title: 'Lead Generation Strategies', minTier: 3 },
   { title: 'Advanced Funnel Building', minTier: 3 },
-  { title: 'Email Marketing Automation', minTier: 3 },
-  // Tier 4 — Ads Premium
+  // Tier 4 — Ads Premium (+3 = 12)
+  { title: 'Email Marketing Automation', minTier: 4 },
   { title: 'Google Ads & SEO', minTier: 4 },
   { title: 'YouTube Channel Growth', minTier: 4 },
-  // Tier 5 — Ads Premium Plus
+  // Tier 5 — Ads Premium Plus (+3 = 15)
   { title: 'Scaling to 6 Figures', minTier: 5 },
   { title: 'Team Building & Leadership', minTier: 5 },
   { title: 'Business Automation Systems', minTier: 5 },

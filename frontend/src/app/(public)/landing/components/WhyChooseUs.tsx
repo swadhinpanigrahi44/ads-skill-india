@@ -226,7 +226,7 @@ export default function WhyChooseUs() {
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true, margin: '-80px' }}
               transition={{ duration: 0.6, delay: 0.15 }}
-              className="text-gray-400 text-[14px] leading-[1.75] mb-8"
+              className="text-gray-300 text-[16px] font-medium leading-[1.8] mb-8"
             >
               Affiliate is perfect for grow your business &amp; you can earn lot of money by
               affiliate marketing, we all time ready for you.

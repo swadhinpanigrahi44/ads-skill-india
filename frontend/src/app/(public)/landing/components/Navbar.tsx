@@ -5,6 +5,7 @@ import Image from 'next/image'
 import Link from 'next/link'
 import { motion, AnimatePresence } from 'framer-motion'
 import type { Transition } from 'framer-motion'
+import { LogIn, UserPlus } from 'lucide-react'
 
 const EASE_OUT = 'easeOut' as const
 const NAV_T: Transition      = { duration: 0.6, ease: EASE_OUT }
@@ -79,14 +80,9 @@ export default function Navbar() {
             href="/login"
             whileHover={{ scale: 1.04 }}
             whileTap={{   scale: 0.96 }}
-            className="flex items-center gap-1.5 bg-[#0066ff] hover:bg-[#0055ee] text-white text-[12px] font-semibold px-4 py-2 rounded-full transition-colors duration-150 shadow-[0_2px_12px_rgba(0,102,255,0.4)]"
+            className="flex items-center gap-2 bg-[#0066ff] hover:bg-[#0055ee] text-white text-[14px] font-bold px-5 py-2.5 rounded-full transition-colors duration-150 shadow-[0_2px_12px_rgba(0,102,255,0.4)]"
           >
-            <lord-icon
-              src="https://cdn.lordicon.com/osunyyww.json"
-              trigger="hover"
-              colors="primary:#ffffff"
-              style={{ width: '14px', height: '14px' }}
-            />
+            <LogIn size={17} strokeWidth={2.5} />
             Login
           </motion.a>
 
@@ -95,14 +91,9 @@ export default function Navbar() {
             href="/register"
             whileHover={{ scale: 1.04, backgroundColor: 'rgba(0,102,255,0.12)' }}
             whileTap={{   scale: 0.96 }}
-            className="flex items-center gap-1.5 border border-[#0066ff] text-white text-[12px] font-semibold px-4 py-2 rounded-full transition-all duration-150"
+            className="flex items-center gap-2 border border-[#0066ff] text-white text-[14px] font-bold px-5 py-2.5 rounded-full transition-all duration-150"
           >
-            <lord-icon
-              src="https://cdn.lordicon.com/xfftupgo.json"
-              trigger="hover"
-              colors="primary:#0066ff"
-              style={{ width: '14px', height: '14px' }}
-            />
+            <UserPlus size={17} strokeWidth={2.5} className="text-[#3b8aff]" />
             Register
           </motion.a>
         </div>
@@ -156,26 +147,16 @@ export default function Navbar() {
             <div className="flex flex-col gap-2.5">
               <a
                 href="/login"
-                className="flex items-center justify-center gap-2 bg-[#0066ff] text-white text-[13px] font-semibold px-5 py-2.5 rounded-full"
+                className="flex items-center justify-center gap-2 bg-[#0066ff] text-white text-[14px] font-bold px-5 py-2.5 rounded-full"
               >
-                <lord-icon
-                  src="https://cdn.lordicon.com/osunyyww.json"
-                  trigger="hover"
-                  colors="primary:#ffffff"
-                  style={{ width: '16px', height: '16px' }}
-                />
+                <LogIn size={17} strokeWidth={2.5} />
                 Login
               </a>
               <a
                 href="/register"
-                className="flex items-center justify-center gap-2 border border-[#0066ff] text-white text-[13px] font-semibold px-5 py-2.5 rounded-full"
+                className="flex items-center justify-center gap-2 border border-[#0066ff] text-white text-[14px] font-bold px-5 py-2.5 rounded-full"
               >
-                <lord-icon
-                  src="https://cdn.lordicon.com/xfftupgo.json"
-                  trigger="hover"
-                  colors="primary:#0066ff"
-                  style={{ width: '16px', height: '16px' }}
-                />
+                <UserPlus size={17} strokeWidth={2.5} className="text-[#3b8aff]" />
                 Register
               </a>
             </div>

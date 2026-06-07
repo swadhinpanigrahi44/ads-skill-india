@@ -156,7 +156,7 @@ export default function About() {
 
             <motion.p
               {...fadeUp(0.25)}
-              className="text-gray-400 text-[14px] leading-[1.75] mb-7 max-w-[440px]"
+              className="text-gray-300 text-[16px] font-medium leading-[1.8] mb-7 max-w-[460px]"
             >
               Affiliate is perfect for grow your business &amp; you can earn a lot of
               money by affiliate marketing, we all time ready for you

@@ -106,7 +106,7 @@ export default function Testimonials() {
           <h2 className="text-white font-black text-[clamp(1.9rem,4.5vw,3rem)] leading-[1.1] mb-4">
             Over 10,000+ clients trust our service and support
           </h2>
-          <p className="text-gray-400 text-[14px] leading-[1.7]">
+          <p className="text-gray-300 text-[16px] font-medium leading-[1.75]">
             Real results from real affiliates — see what our community says about earning with ADS Skill India.
           </p>
         </motion.div>

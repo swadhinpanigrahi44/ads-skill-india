@@ -61,31 +61,12 @@ export default function Monetize() {
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true, margin: '-80px' }}
               transition={{ duration: 0.6, delay: 0.16 }}
-              className="text-gray-400 text-[14px] leading-[1.78] mb-8 max-w-[460px]"
+              className="text-gray-300 text-[16px] font-medium leading-[1.8] max-w-[480px]"
             >
               Over 50,000+ affiliates choose Ads Skill India as their preferred marketplace,
               and for a good reason. We paid over ₹5+ Crore in commissions on time within 2
               years. Join our growing affiliate network and start earning today.
             </motion.p>
-
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true, margin: '-80px' }}
-              transition={{ duration: 0.5, delay: 0.24 }}
-            >
-              <motion.div whileHover={{ scale: 1.04 }} whileTap={{ scale: 0.97 }} className="inline-block">
-                <Link
-                  href="/register"
-                  className="inline-flex items-center gap-2.5 bg-[#0066ff] hover:bg-[#0055ee] text-white font-extrabold text-[15px] px-8 py-4 rounded-full transition-all duration-200 shadow-[0_4px_28px_rgba(0,102,255,0.45)] group"
-                >
-                  <ShiningText text="Become an Affiliate" colorBase="#8ab4ff" colorMid="#c0d8ff" colorShine="#ffffff" className="font-extrabold" />
-                  <svg className="w-3.5 h-3.5 transition-transform duration-200 group-hover:translate-x-1" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={2.8}>
-                    <path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7" />
-                  </svg>
-                </Link>
-              </motion.div>
-            </motion.div>
           </div>
 
           {/* RIGHT — CPU Architecture + CTA */}
@@ -113,9 +94,9 @@ export default function Monetize() {
             <motion.div whileHover={{ scale: 1.04 }} whileTap={{ scale: 0.97 }} className="inline-block">
               <Link
                 href="/register"
-                className="inline-flex items-center gap-2.5 bg-[#0066ff] hover:bg-[#0055ee] text-white font-extrabold text-[15px] px-8 py-4 rounded-full transition-all duration-200 shadow-[0_4px_28px_rgba(0,102,255,0.45)] group"
+                className="inline-flex items-center gap-2.5 bg-[#0066ff] hover:bg-[#0055ee] text-white font-extrabold text-[17px] px-9 py-4 rounded-full transition-all duration-200 shadow-[0_4px_28px_rgba(0,102,255,0.45)] group"
               >
-                <ShiningText text="Become an Affiliate" colorBase="#8ab4ff" colorMid="#c0d8ff" colorShine="#ffffff" className="font-extrabold" />
+                <ShiningText text="Become an Affiliate" colorBase="#8ab4ff" colorMid="#c0d8ff" colorShine="#ffffff" className="font-extrabold text-[17px]" />
                 <svg className="w-3.5 h-3.5 transition-transform duration-200 group-hover:translate-x-1" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={2.8}>
                   <path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7" />
                 </svg>
