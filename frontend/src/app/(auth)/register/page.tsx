@@ -5,7 +5,7 @@ import { useSearchParams } from 'next/navigation'
 import { FormEvent, useEffect, useState, Suspense } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { Eye, EyeOff } from 'lucide-react'
-import { authService, paymentsService } from '@/lib/services'
+import { authService, paymentsService, referralsService } from '@/lib/services'
 import { isPasswordValid } from '@/lib/password'
 import { PasswordChecklist } from '@/components/auth/password-checklist'
 
@@ -33,6 +33,15 @@ const PACKAGES: Package[] = [
   { id: 'adspremium',     name: 'AdsPremium',    amount: 9999,  blurb: '12 Courses · Lifetime' },
   { id: 'adspremiumplus', name: 'AdsPremium+',   amount: 15999, blurb: '15 Courses · Lifetime' },
 ]
+
+// Resolve a ?plan= value that may be a package id ('adslite') or a backend
+// slug ('ads-lite') to the local package id used by the dropdown.
+function resolvePlanId(param: string | null | undefined): string {
+  if (!param) return ''
+  if (PACKAGES.some(p => p.id === param)) return param
+  const id = Object.keys(SLUG_MAP).find(k => SLUG_MAP[k] === param)
+  return id && PACKAGES.some(p => p.id === id) ? id : ''
+}
 
 const STATES = [
   'Andhra Pradesh','Arunachal Pradesh','Assam','Bihar','Chhattisgarh','Goa','Gujarat',
@@ -143,18 +152,30 @@ function RegisterPageInner() {
   const searchParams = useSearchParams()
   const [step, setStep] = useState<1 | 2 | 3>(1)
 
-  const initialPlan = searchParams?.get('plan') ?? ''
-  const validInitialPlan = PACKAGES.some(p => p.id === initialPlan) ? initialPlan : ''
-  const [packageId, setPackageId] = useState(validInitialPlan)
-
-  useEffect(() => {
-    const plan = searchParams?.get('plan')
-    if (plan && PACKAGES.some(p => p.id === plan)) {
-      setPackageId(plan)
-    }
-  }, [searchParams])
-  const [sponsorId, setSponsorId] = useState('')
+  const [packageId, setPackageId] = useState(resolvePlanId(searchParams?.get('plan')))
+  const [sponsorId, setSponsorId] = useState(searchParams?.get('ref') ?? '')
   const [sponsorName, setSponsorName] = useState('')
+
+  // Apply ?plan= and ?ref= from the referral link.
+  useEffect(() => {
+    const plan = resolvePlanId(searchParams?.get('plan'))
+    if (plan) setPackageId(plan)
+    const ref = searchParams?.get('ref')
+    if (ref) setSponsorId(ref)
+  }, [searchParams])
+
+  // Auto-fill the sponsor name from the sponsor ID (debounced lookup).
+  useEffect(() => {
+    const code = sponsorId.trim()
+    if (!code) { setSponsorName(''); return }
+    const t = setTimeout(() => {
+      referralsService
+        .lookupSponsor(code)
+        .then(r => setSponsorName(r.found ? (r.fullName ?? '') : ''))
+        .catch(() => setSponsorName(''))
+    }, 400)
+    return () => clearTimeout(t)
+  }, [sponsorId])
   const [fullName, setFullName] = useState('')
   const [email, setEmail] = useState('')
   const [mobile, setMobile] = useState('')

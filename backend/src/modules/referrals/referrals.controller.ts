@@ -30,4 +30,11 @@ export class ReferralsController {
     );
     return { success: true, data };
   }
+
+  // Public: resolve a referral code to the sponsor's name (register prefill)
+  @Get('referrals/lookup')
+  async lookup(@Query('code') code?: string) {
+    const data = await this.referralsService.lookupSponsor(code ?? '');
+    return { success: true, data };
+  }
 }

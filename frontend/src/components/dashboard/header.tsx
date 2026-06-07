@@ -6,6 +6,7 @@ import { useEffect, useRef, useState } from "react";
 import { Menu, UserCircle2, Lock, LogOut, ChevronDown } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useAuth } from "@/hooks/useAuth";
+import { useAuthStore } from "@/store/authStore";
 
 interface HeaderProps {
   userName?: string;
@@ -13,15 +14,29 @@ interface HeaderProps {
   onMenuClick?: () => void;
 }
 
+/** "Swadhin Panigrahi" -> "SP", "Swadhin" -> "SW". */
+function initialsOf(name: string): string {
+  const parts = name.trim().split(/\s+/).filter(Boolean);
+  if (parts.length === 0) return "?";
+  if (parts.length === 1) return parts[0].slice(0, 2).toUpperCase();
+  return (parts[0][0] + parts[parts.length - 1][0]).toUpperCase();
+}
+
 export function Header({
-  userName = "Raj Jaiswal",
-  userInitials = "RJ",
+  userName,
+  userInitials,
   onMenuClick,
 }: HeaderProps) {
   const [open, setOpen] = useState(false);
   const ref = useRef<HTMLDivElement>(null);
   const router = useRouter();
   const { logout } = useAuth();
+
+  const user = useAuthStore((s) => s.user);
+  const displayName = user?.fullName ?? userName ?? "User";
+  const displayInitials = user?.fullName
+    ? initialsOf(user.fullName)
+    : userInitials ?? initialsOf(displayName);
 
   const handleLogout = () => {
     logout();
@@ -63,7 +78,7 @@ export function Header({
           className="flex items-center gap-2.5 cursor-pointer hover:opacity-90"
         >
           <span className="text-text-secondary text-[14px] font-medium hidden sm:inline">
-            Hello, {userName}
+            Hello, {displayName}
           </span>
           <span
             className="rounded-full text-white font-extrabold text-[12px] flex items-center justify-center"
@@ -74,7 +89,7 @@ export function Header({
               boxShadow: "0 4px 14px rgba(45, 125, 255, 0.4)",
             }}
           >
-            {userInitials}
+            {displayInitials}
           </span>
           <ChevronDown
             size={14}

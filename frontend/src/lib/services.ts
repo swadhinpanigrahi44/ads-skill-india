@@ -140,6 +140,10 @@ export const coursesService = {
 
 // ── Referrals ───────────────────────────────────────────────────
 export const referralsService = {
+  lookupSponsor: (code: string) =>
+    apiCall(`/referrals/lookup?code=${encodeURIComponent(code)}`).then(
+      (r) => r.data as { found: boolean; fullName?: string },
+    ),
   getMyLinks: () =>
     api.get('/referrals/my-links').then((r) => r.data as { referralCode: string; referralLink: string }),
   getMyTeam: () => api.get('/referrals/my-team').then((r) => r.data),

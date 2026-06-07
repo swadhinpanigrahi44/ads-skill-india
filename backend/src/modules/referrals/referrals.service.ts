@@ -124,6 +124,17 @@ export class ReferralsService {
     );
   }
 
+  /** Public: resolve a referral code to the sponsor's name (for register prefill). */
+  async lookupSponsor(code: string) {
+    if (!code) return { found: false as const };
+    const u = await this.prisma.user.findUnique({
+      where: { referralCode: code.trim() },
+      select: { fullName: true, isActive: true, isBanned: true },
+    });
+    if (!u || !u.isActive || u.isBanned) return { found: false as const };
+    return { found: true as const, fullName: u.fullName };
+  }
+
   // ── User-facing queries ────────────────────────────────────────
 
   async getMyLinks(userId: string, frontendUrl: string) {
