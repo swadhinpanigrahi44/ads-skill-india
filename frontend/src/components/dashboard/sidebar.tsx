@@ -198,9 +198,9 @@ export function Sidebar({ open, onClose }: SidebarProps) {
                 <button
                   type="button"
                   onClick={() => toggle(node.id)}
-                  className="flex items-center gap-2.5 w-[calc(100%-16px)] px-4 py-2.5 mx-2 my-px rounded-[7px] text-text-muted text-[13.5px] hover:bg-white/[0.04] hover:text-text-secondary transition-colors cursor-pointer"
+                  className="flex items-center gap-2.5 w-[calc(100%-16px)] px-4 py-2.5 mx-2 my-px rounded-[7px] text-text-secondary text-[14px] font-semibold hover:bg-white/[0.06] hover:text-white transition-colors cursor-pointer"
                 >
-                  <span className="opacity-70 flex items-center justify-center min-w-[18px]">
+                  <span className="opacity-90 flex items-center justify-center min-w-[18px]">
                     {node.icon}
                   </span>
                   <span className="flex-1 text-left">{node.label}</span>
@@ -219,10 +219,10 @@ export function Sidebar({ open, onClose }: SidebarProps) {
                         href={child.href}
                         onClick={onClose}
                         className={cn(
-                          "flex items-center gap-2.5 px-4 py-2 pl-10 mx-2 my-px rounded-[7px] text-[13.5px] transition-colors",
+                          "flex items-center gap-2.5 px-4 py-2 pl-10 mx-2 my-px rounded-[7px] text-[14px] transition-colors",
                           active
                             ? "text-text-active-nav font-semibold border-l-2 border-accent"
-                            : "text-text-muted font-normal hover:bg-white/[0.04] hover:text-text-secondary"
+                            : "text-text-secondary font-medium hover:bg-white/[0.06] hover:text-white"
                         )}
                         style={
                           active
@@ -278,13 +278,13 @@ function NavLeafItem({
     <Wrapper
       {...wrapperProps}
       className={cn(
-        "flex items-center gap-2.5 px-4 py-2.5 mx-2 my-px rounded-[7px] text-[13.5px] transition-colors",
+        "flex items-center gap-2.5 px-4 py-2.5 mx-2 my-px rounded-[7px] text-[14px] transition-colors",
         asButton && "w-[calc(100%-16px)] text-left cursor-pointer",
         active
           ? "font-semibold text-text-active-nav"
           : danger
-          ? "text-danger font-normal hover:bg-danger/10"
-          : "text-text-muted font-normal hover:bg-white/[0.04] hover:text-text-secondary"
+          ? "text-danger font-medium hover:bg-danger/10"
+          : "text-text-secondary font-semibold hover:bg-white/[0.06] hover:text-white"
       )}
       style={
         active
@@ -300,7 +300,7 @@ function NavLeafItem({
         <span
           className={cn(
             "flex items-center justify-center min-w-[18px]",
-            active ? "opacity-100" : "opacity-70"
+            active ? "opacity-100" : "opacity-90"
           )}
         >
           {icon}

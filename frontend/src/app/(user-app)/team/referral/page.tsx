@@ -7,14 +7,7 @@ import { PageWrapper } from "@/components/dashboard/page-wrapper";
 import { Card } from "@/components/dashboard/card";
 import { DashButton } from "@/components/dashboard/dash-button";
 import { useAuthStore } from "@/store/authStore";
-import { walletService } from "@/lib/services";
-
-const PLANS = [
-  { name: "AdsLite", slug: "ads-lite", price: "₹1,495.00" },
-  { name: "AdsPro", slug: "ads-pro", price: "₹2,999.00" },
-  { name: "AdsSumo", slug: "ads-sumo", price: "₹5,999.00" },
-  { name: "AdsPremium", slug: "ads-premium", price: "₹9,999.00" },
-];
+import { walletService, catalogService, type CoursePackage } from "@/lib/services";
 
 interface Commission {
   amount: number;
@@ -26,18 +19,31 @@ export default function ReferralLinksPage() {
   const code = user?.referralCode ?? "—";
   const [copied, setCopied] = useState<string | null>(null);
   const [totalEarned, setTotalEarned] = useState(0);
+  const [packages, setPackages] = useState<CoursePackage[]>([]);
 
   const origin = typeof window !== "undefined" ? window.location.origin : "https://adsskillindia.in";
   const generalLink = `${origin}/register?ref=${code}`;
+  // Plan links are generated from the live catalog, so they always reflect the
+  // current package set (all 5 today, and any future changes automatically).
   const planLinks = useMemo(
-    () => PLANS.map((p) => ({ ...p, url: `${origin}/register?ref=${code}&plan=${p.slug}` })),
-    [origin, code],
+    () =>
+      packages.map((p) => ({
+        name: p.name,
+        slug: p.slug,
+        price: `₹${p.priceFormatted}`,
+        url: `${origin}/register?ref=${code}&plan=${p.slug}`,
+      })),
+    [packages, origin, code],
   );
 
   useEffect(() => {
     walletService
       .getCommissions()
       .then((rows) => setTotalEarned((rows as Commission[]).reduce((s, c) => s + c.amount, 0)))
+      .catch(() => {});
+    catalogService
+      .getPackages()
+      .then(setPackages)
       .catch(() => {});
   }, []);
 

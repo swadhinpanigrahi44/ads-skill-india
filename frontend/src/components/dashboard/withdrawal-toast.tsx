@@ -13,12 +13,21 @@ const SAMPLE_NAMES = [
 ];
 const SAMPLE_AMOUNTS = ["₹9,500", "₹12,400", "₹6,800", "₹3,250", "₹15,000"];
 
+// Banking hours (local 24h time). The popup only appears inside this window.
+// Change these two numbers to adjust when the popup is shown.
+const BANKING_HOURS = { start: 10, end: 18 }; // 10:00 AM – 6:00 PM
+
+function isWithinBankingHours(): boolean {
+  const h = new Date().getHours();
+  return h >= BANKING_HOURS.start && h < BANKING_HOURS.end;
+}
+
 function pick<T>(arr: T[]): T {
   return arr[Math.floor(Math.random() * arr.length)];
 }
 
 export function WithdrawalToast() {
-  const [visible, setVisible] = useState(true);
+  const [visible, setVisible] = useState(false);
   const [data, setData] = useState({
     name: "Prithviraj Sukumaran",
     amount: "₹9,500",
@@ -26,9 +35,16 @@ export function WithdrawalToast() {
   });
 
   useEffect(() => {
+    // Show on mount only if currently within banking hours.
+    setVisible(isWithinBankingHours());
+
     const interval = setInterval(() => {
-      setData({ name: pick(SAMPLE_NAMES), amount: pick(SAMPLE_AMOUNTS), time: "just now" });
-      setVisible(true);
+      if (isWithinBankingHours()) {
+        setData({ name: pick(SAMPLE_NAMES), amount: pick(SAMPLE_AMOUNTS), time: "just now" });
+        setVisible(true);
+      } else {
+        setVisible(false);
+      }
     }, 12000);
     return () => clearInterval(interval);
   }, []);
