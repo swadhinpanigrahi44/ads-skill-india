@@ -19,23 +19,46 @@ export default function LoginPage() {
   const [remember, setRemember] = useState(false)
   const [error, setError] = useState('')
   const [loading, setLoading] = useState(false)
+  const [otpRequired, setOtpRequired] = useState(false)
+  const [otp, setOtp] = useState('')
+
+  const finishLogin = (accessToken: string, user: { role: string } & Record<string, unknown>) => {
+    setAuth(accessToken, user as unknown as AuthUser)
+    setAuthHint()
+    if (user.role === 'MASTER_ADMIN' || user.role === 'SUB_ADMIN') {
+      router.push('/admin-panel')
+    } else {
+      router.push('/dashboard')
+    }
+  }
 
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault()
     setError('')
     setLoading(true)
     try {
-      const { accessToken, user } = await authService.login({ email, password })
-      setAuth(accessToken, user as unknown as AuthUser)
-      setAuthHint() // first-party cookie so middleware lets us into protected routes
-      // Send admins to the admin panel, regular users to the dashboard.
-      if (user.role === 'MASTER_ADMIN' || user.role === 'SUB_ADMIN') {
-        router.push('/admin-panel')
-      } else {
-        router.push('/dashboard')
+      const result = await authService.login({ email, password })
+      if ('twoFARequired' in result) {
+        setOtpRequired(true) // 2FA: collect the emailed OTP next
+        return
       }
+      finishLogin(result.accessToken, result.user)
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Login failed')
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  const handleVerifyOtp = async (e: FormEvent) => {
+    e.preventDefault()
+    setError('')
+    setLoading(true)
+    try {
+      const { accessToken, user } = await authService.verifyLoginOtp(email, otp.trim())
+      finishLogin(accessToken, user)
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Invalid code')
     } finally {
       setLoading(false)
     }
@@ -84,10 +107,41 @@ export default function LoginPage() {
         </div>
 
         <h1 className="text-white font-extrabold text-[28px] sm:text-[30px] text-center mb-9">
-          Login to your account
+          {otpRequired ? "Verify it's you" : 'Login to your account'}
         </h1>
 
-        <form onSubmit={handleSubmit} className="space-y-5">
+        {otpRequired && (
+          <form onSubmit={handleVerifyOtp} className="space-y-5">
+            <p className="text-gray-400 text-[13.5px] text-center -mt-4 mb-2">
+              We sent a 6-digit code to{' '}
+              <span className="text-white font-semibold">{email}</span>
+            </p>
+            <input
+              type="text"
+              inputMode="numeric"
+              required
+              value={otp}
+              onChange={e => setOtp(e.target.value.replace(/\D/g, '').slice(0, 6))}
+              placeholder="······"
+              className="w-full bg-black border border-transparent rounded-xl px-4 py-4 text-white text-[18px] tracking-[8px] text-center placeholder:text-gray-700 focus:outline-none focus:border-[#0a7cff] focus:ring-2 focus:ring-[#0a7cff]/30 transition-all"
+            />
+            {error && (
+              <p className="text-red-400 text-[13px] font-semibold text-center">{error}</p>
+            )}
+            <motion.button
+              type="submit"
+              disabled={loading || otp.length !== 6}
+              whileHover={{ scale: loading ? 1 : 1.01 }}
+              whileTap={{ scale: loading ? 1 : 0.98 }}
+              className="w-full mt-2 text-white font-extrabold text-[16px] px-6 py-4 rounded-2xl transition-all duration-200 disabled:opacity-70 disabled:cursor-wait"
+              style={{ background: 'linear-gradient(180deg, #2a8eff 0%, #0a7cff 100%)', boxShadow: '0 8px 26px rgba(10,124,255,0.45)' }}
+            >
+              {loading ? 'Verifying…' : 'Verify & Login'}
+            </motion.button>
+          </form>
+        )}
+
+        <form onSubmit={handleSubmit} className={otpRequired ? 'hidden' : 'space-y-5'}>
           {/* Email */}
           <div>
             <label className="flex items-center gap-2 text-white font-bold text-[14px] mb-2">

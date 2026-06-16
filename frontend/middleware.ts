@@ -37,6 +37,7 @@ export const config = {
   matcher: [
     '/dashboard/:path*',
     '/admin-panel/:path*',
+    '/profile',
     '/withdraw/:path*',
     '/courses/:path*',
     '/team/:path*',

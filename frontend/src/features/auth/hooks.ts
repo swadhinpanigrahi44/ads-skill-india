@@ -4,6 +4,7 @@ import { useCallback } from 'react';
 import { useRouter } from 'next/navigation';
 import { api } from '@/lib/api';
 import { useAuthStore, AuthUser } from '@/store/authStore';
+import { clearAuthHint } from '@/lib/session';
 
 export function useAuthFeature() {
   const { setAuth, clearAuth } = useAuthStore();
@@ -33,6 +34,7 @@ export function useAuthFeature() {
   const logout = useCallback(async () => {
     try { await api.post('/auth/logout', {}); } catch { /* ignore */ }
     clearAuth();
+    clearAuthHint(); // clear first-party middleware cookie so routes re-gate
     router.push('/login');
   }, [clearAuth, router]);
 

@@ -29,10 +29,15 @@ export interface MeResponse {
   referredById: string | null;
   isActive: boolean;
   twoFAEnabled: boolean;
+  avatarUrl: string | null;
   createdAt: string;
   wallet: WalletBalance;
   partnerTier: { tier: { name: string; slug: string } } | null;
 }
+
+export type LoginResult =
+  | { accessToken: string; user: MeResponse }
+  | { twoFARequired: true; email: string };
 
 export interface CoursePackage {
   id: string;
@@ -77,7 +82,16 @@ export const authService = {
   }) => api.post('/auth/register', body).then((r) => r.data),
 
   login: (body: { email: string; password: string }) =>
-    api.post('/auth/login', body).then((r) => r.data as { accessToken: string; user: MeResponse }),
+    api.post('/auth/login', body).then((r) => r.data as LoginResult),
+
+  verifyLoginOtp: (email: string, otp: string) =>
+    api
+      .post('/auth/2fa/verify-login', { email, otp })
+      .then((r) => r.data as { accessToken: string; user: MeResponse }),
+
+  request2FA: () => api.post('/auth/2fa/request', {}).then((r) => r.data),
+  enable2FA: (otp: string) => api.post('/auth/2fa/enable', { otp }).then((r) => r.data),
+  disable2FA: () => api.post('/auth/2fa/disable', {}).then((r) => r.data),
 
   logout: () => api.post('/auth/logout', {}).then((r) => r.data),
 
@@ -96,6 +110,18 @@ export const userService = {
   getMe: () => api.get('/users/me').then((r) => r.data as MeResponse),
   updateMe: (body: { fullName?: string; state?: string }) =>
     api.put('/users/me', body).then((r) => r.data),
+  getAvatarUploadParams: () =>
+    api.post('/users/me/avatar/upload-url', {}).then(
+      (r) => r.data as {
+        cloudName: string;
+        apiKey: string;
+        timestamp: number;
+        folder: string;
+        signature: string;
+      },
+    ),
+  setAvatar: (url: string) =>
+    api.put('/users/me/avatar', { url }).then((r) => r.data as MeResponse),
 };
 
 // ── Wallet ──────────────────────────────────────────────────────

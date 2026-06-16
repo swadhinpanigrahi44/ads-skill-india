@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
-import { Menu, UserCircle2, Lock, LogOut, ChevronDown } from "lucide-react";
+import { Menu, UserCircle2, KeyRound, ShieldCheck, LogOut, ChevronDown } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useAuth } from "@/hooks/useAuth";
 import { useAuthStore } from "@/store/authStore";
@@ -80,17 +80,27 @@ export function Header({
           <span className="text-text-secondary text-[14px] font-medium hidden sm:inline">
             Hello, {displayName}
           </span>
-          <span
-            className="rounded-full text-white font-extrabold text-[12px] flex items-center justify-center"
-            style={{
-              width: 32,
-              height: 32,
-              background: "linear-gradient(135deg, #0a3a8a 0%, #1858d4 50%, #2d7dff 100%)",
-              boxShadow: "0 4px 14px rgba(45, 125, 255, 0.4)",
-            }}
-          >
-            {displayInitials}
-          </span>
+          {user?.avatarUrl ? (
+            // eslint-disable-next-line @next/next/no-img-element
+            <img
+              src={user.avatarUrl}
+              alt={displayName}
+              className="rounded-full object-cover"
+              style={{ width: 32, height: 32, boxShadow: "0 4px 14px rgba(45, 125, 255, 0.4)" }}
+            />
+          ) : (
+            <span
+              className="rounded-full text-white font-extrabold text-[12px] flex items-center justify-center"
+              style={{
+                width: 32,
+                height: 32,
+                background: "linear-gradient(135deg, #0a3a8a 0%, #1858d4 50%, #2d7dff 100%)",
+                boxShadow: "0 4px 14px rgba(45, 125, 255, 0.4)",
+              }}
+            >
+              {displayInitials}
+            </span>
+          )}
           <ChevronDown
             size={14}
             className={cn(
@@ -106,20 +116,28 @@ export function Header({
             style={{ boxShadow: "0 8px 30px rgba(0,0,0,0.5)" }}
           >
             <Link
-              href="/account/kyc"
+              href="/profile"
               className="flex items-center gap-2.5 px-4 py-2.5 text-text-secondary text-[13px] hover:bg-white/[0.06] transition-colors"
               onClick={() => setOpen(false)}
             >
               <UserCircle2 size={15} className="opacity-80" />
-              Account & KYC
+              Profile Settings
             </Link>
             <Link
               href="/settings/password"
               className="flex items-center gap-2.5 px-4 py-2.5 text-text-secondary text-[13px] hover:bg-white/[0.06] transition-colors"
               onClick={() => setOpen(false)}
             >
-              <Lock size={15} className="opacity-80" />
-              Password Change
+              <KeyRound size={15} className="opacity-80" />
+              Change Password
+            </Link>
+            <Link
+              href="/settings/2fa"
+              className="flex items-center gap-2.5 px-4 py-2.5 text-text-secondary text-[13px] hover:bg-white/[0.06] transition-colors"
+              onClick={() => setOpen(false)}
+            >
+              <ShieldCheck size={15} className="opacity-80" />
+              2FA Security
             </Link>
             <div className="my-1 mx-3 border-t border-border-default" />
             <button

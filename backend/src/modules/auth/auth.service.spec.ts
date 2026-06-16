@@ -2,6 +2,7 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { AuthService } from './auth.service';
 import { PrismaService } from '../../prisma/prisma.service';
 import { JwtService } from '@nestjs/jwt';
+import { EmailService } from '../../common/email/email.service';
 import {
   ConflictException,
   UnauthorizedException,
@@ -62,6 +63,7 @@ describe('AuthService', () => {
         AuthService,
         { provide: PrismaService, useValue: prismaMock },
         { provide: JwtService, useValue: jwtMock },
+        { provide: EmailService, useValue: { sendOtp: jest.fn() } },
       ],
     }).compile();
 

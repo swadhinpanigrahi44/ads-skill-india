@@ -11,13 +11,110 @@ import { PrismaService } from '../../prisma/prisma.service';
 import { RegisterDto } from './dto/register.dto';
 import { LoginDto } from './dto/login.dto';
 import { ChangePasswordDto, ForgotPasswordDto, ResetPasswordDto } from './dto/reset-password.dto';
+import { EmailService } from '../../common/email/email.service';
+import { User } from '@prisma/client';
 
 @Injectable()
 export class AuthService {
   constructor(
     private prisma: PrismaService,
     private jwtService: JwtService,
+    private emailService: EmailService,
   ) {}
+
+  /** Public-safe user fields returned to the client. */
+  private toPublicUser(user: User) {
+    return {
+      id: user.id,
+      adsId: user.adsId,
+      fullName: user.fullName,
+      email: user.email,
+      mobile: user.mobile,
+      state: user.state,
+      role: user.role,
+      kycStatus: user.kycStatus,
+      referralCode: user.referralCode,
+      avatarUrl: user.avatarUrl,
+      twoFAEnabled: user.twoFAEnabled,
+    };
+  }
+
+  /** Issue tokens + persist refresh hash, return the standard auth response. */
+  private async buildAuthResponse(user: User) {
+    const tokens = await this.generateTokens(user.id, user.role);
+    await this.saveRefreshToken(user.id, tokens.refreshToken);
+    return {
+      accessToken: tokens.accessToken,
+      refreshToken: tokens.refreshToken,
+      user: this.toPublicUser(user),
+    };
+  }
+
+  // ── 2FA (email OTP) helpers ─────────────────────────────────────
+  private generateOtp(): string {
+    return crypto.randomInt(0, 1_000_000).toString().padStart(6, '0');
+  }
+
+  private async issueOtp(userId: string): Promise<string> {
+    const otp = this.generateOtp();
+    const twoFAOtpHash = await bcrypt.hash(otp, 10);
+    const twoFAOtpExpiresAt = new Date(Date.now() + 10 * 60 * 1000); // 10 min
+    await this.prisma.user.update({
+      where: { id: userId },
+      data: { twoFAOtpHash, twoFAOtpExpiresAt },
+    });
+    return otp;
+  }
+
+  private async consumeOtp(user: User, otp: string): Promise<boolean> {
+    if (!user.twoFAOtpHash || !user.twoFAOtpExpiresAt) return false;
+    if (user.twoFAOtpExpiresAt < new Date()) return false;
+    const ok = await bcrypt.compare(otp, user.twoFAOtpHash);
+    if (!ok) return false;
+    await this.prisma.user.update({
+      where: { id: user.id },
+      data: { twoFAOtpHash: null, twoFAOtpExpiresAt: null },
+    });
+    return true;
+  }
+
+  /** Send an OTP to the logged-in user's email (used to enable 2FA). */
+  async request2FAOtp(userId: string) {
+    const user = await this.prisma.user.findUniqueOrThrow({ where: { id: userId } });
+    const otp = await this.issueOtp(user.id);
+    await this.emailService.sendOtp(user.email, otp, 'enable');
+    return { message: 'OTP sent to your email' };
+  }
+
+  async enable2FA(userId: string, otp: string) {
+    const user = await this.prisma.user.findUniqueOrThrow({ where: { id: userId } });
+    const ok = await this.consumeOtp(user, otp);
+    if (!ok) throw new BadRequestException('Invalid or expired OTP');
+    await this.prisma.user.update({
+      where: { id: userId },
+      data: { twoFAEnabled: true },
+    });
+    return { twoFAEnabled: true };
+  }
+
+  async disable2FA(userId: string) {
+    await this.prisma.user.update({
+      where: { id: userId },
+      data: { twoFAEnabled: false, twoFAOtpHash: null, twoFAOtpExpiresAt: null },
+    });
+    return { twoFAEnabled: false };
+  }
+
+  /** Step 2 of login when 2FA is enabled: verify the emailed OTP, issue tokens. */
+  async verifyLoginOtp(email: string, otp: string) {
+    const user = await this.prisma.user.findUnique({ where: { email } });
+    if (!user || user.isBanned || !user.isActive) {
+      throw new UnauthorizedException('Invalid request');
+    }
+    const ok = await this.consumeOtp(user, otp);
+    if (!ok) throw new UnauthorizedException('Invalid or expired OTP');
+    return this.buildAuthResponse(user);
+  }
 
   async register(dto: RegisterDto) {
     const emailExists = await this.prisma.user.findUnique({ where: { email: dto.email } });
@@ -103,24 +200,14 @@ export class AuthService {
     const passwordMatch = await bcrypt.compare(dto.password, user.passwordHash);
     if (!passwordMatch) throw new UnauthorizedException('Invalid email or password');
 
-    const tokens = await this.generateTokens(user.id, user.role);
-    await this.saveRefreshToken(user.id, tokens.refreshToken);
+    // If 2FA is enabled, don't issue tokens yet — email an OTP and ask for it.
+    if (user.twoFAEnabled) {
+      const otp = await this.issueOtp(user.id);
+      await this.emailService.sendOtp(user.email, otp, 'login');
+      return { twoFARequired: true as const, email: user.email };
+    }
 
-    return {
-      accessToken: tokens.accessToken,
-      refreshToken: tokens.refreshToken,
-      user: {
-        id: user.id,
-        adsId: user.adsId,
-        fullName: user.fullName,
-        email: user.email,
-        mobile: user.mobile,
-        state: user.state,
-        role: user.role,
-        kycStatus: user.kycStatus,
-        referralCode: user.referralCode,
-      },
-    };
+    return this.buildAuthResponse(user);
   }
 
   async refresh(userId: string) {

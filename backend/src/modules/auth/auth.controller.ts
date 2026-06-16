@@ -40,6 +40,15 @@ export class AuthController {
     return { success: true, data: { user } };
   }
 
+  private setAuthCookies(
+    res: Response,
+    refreshToken: string,
+    userId: string,
+  ) {
+    res.cookie('refresh_token', refreshToken, REFRESH_COOKIE_OPTIONS);
+    res.cookie('refresh_uid', userId, { ...REFRESH_COOKIE_OPTIONS, httpOnly: false });
+  }
+
   @Post('login')
   @HttpCode(HttpStatus.OK)
   async login(
@@ -48,19 +57,57 @@ export class AuthController {
   ) {
     const result = await this.authService.login(dto);
 
-    res.cookie('refresh_token', result.refreshToken, REFRESH_COOKIE_OPTIONS);
-    res.cookie('refresh_uid', result.user.id, {
-      ...REFRESH_COOKIE_OPTIONS,
-      httpOnly: false,
-    });
+    // 2FA enabled: no tokens yet — frontend must collect the emailed OTP.
+    if ('twoFARequired' in result) {
+      return { success: true, data: { twoFARequired: true, email: result.email } };
+    }
 
+    this.setAuthCookies(res, result.refreshToken, result.user.id);
     return {
       success: true,
-      data: {
-        accessToken: result.accessToken,
-        user: result.user,
-      },
+      data: { accessToken: result.accessToken, user: result.user },
     };
+  }
+
+  @Post('2fa/verify-login')
+  @HttpCode(HttpStatus.OK)
+  async verifyLogin(
+    @Body() body: { email: string; otp: string },
+    @Res({ passthrough: true }) res: Response,
+  ) {
+    const result = await this.authService.verifyLoginOtp(body.email, body.otp);
+    this.setAuthCookies(res, result.refreshToken, result.user.id);
+    return {
+      success: true,
+      data: { accessToken: result.accessToken, user: result.user },
+    };
+  }
+
+  @Post('2fa/request')
+  @HttpCode(HttpStatus.OK)
+  @UseGuards(JwtAuthGuard)
+  async request2FA(@CurrentUser() user: { id: string }) {
+    const data = await this.authService.request2FAOtp(user.id);
+    return { success: true, data };
+  }
+
+  @Post('2fa/enable')
+  @HttpCode(HttpStatus.OK)
+  @UseGuards(JwtAuthGuard)
+  async enable2FA(
+    @CurrentUser() user: { id: string },
+    @Body('otp') otp: string,
+  ) {
+    const data = await this.authService.enable2FA(user.id, otp ?? '');
+    return { success: true, data };
+  }
+
+  @Post('2fa/disable')
+  @HttpCode(HttpStatus.OK)
+  @UseGuards(JwtAuthGuard)
+  async disable2FA(@CurrentUser() user: { id: string }) {
+    const data = await this.authService.disable2FA(user.id);
+    return { success: true, data };
   }
 
   @Post('refresh')

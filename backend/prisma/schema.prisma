@@ -77,8 +77,11 @@ model User {
   kycRejectedAt    DateTime?
   kycRejectionNote String?
   refreshTokenHash String?
+  avatarUrl        String?
   twoFASecret      String?
   twoFAEnabled     Boolean   @default(false)
+  twoFAOtpHash     String?
+  twoFAOtpExpiresAt DateTime?
   createdAt        DateTime  @default(now())
   updatedAt        DateTime  @updatedAt
 

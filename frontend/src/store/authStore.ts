@@ -10,6 +10,8 @@ export interface AuthUser {
   role: 'USER' | 'SUB_ADMIN' | 'MASTER_ADMIN';
   kycStatus: 'NOT_STARTED' | 'PENDING' | 'APPROVED' | 'REJECTED';
   referralCode: string;
+  avatarUrl?: string | null;
+  twoFAEnabled?: boolean;
 }
 
 interface AuthState {
