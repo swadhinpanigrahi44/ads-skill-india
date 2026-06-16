@@ -41,11 +41,18 @@ export class EmailService {
       this.logger.log(`[DEV] 2FA OTP for ${to} (${purpose}): ${code}`);
     }
 
-    await this.client().emails.send({
+    const { error } = await this.client().emails.send({
       from: this.from(),
       to,
       subject: `${title} — ADS Skill India`,
       html,
     });
+    if (error) {
+      // Resend returns errors in the response body rather than throwing.
+      this.logger.error(`Resend send failed for ${to}: ${error.message}`);
+      throw new ServiceUnavailableException(
+        'Could not send the verification email. Please try again later.',
+      );
+    }
   }
 }
