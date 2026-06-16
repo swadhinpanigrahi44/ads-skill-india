@@ -158,8 +158,8 @@ export function Sidebar({ open, onClose }: SidebarProps) {
           backdropFilter: "blur(14px)",
         }}
       >
-        {/* Logo */}
-        <div className="px-5 pt-[18px] pb-4 border-b border-[#1a2742] shrink-0">
+        {/* Logo — height matches the header (56px) so both bottom borders align */}
+        <div className="h-[56px] flex items-center px-5 border-b border-[#1a2742] shrink-0">
           <Link href="/dashboard" className="flex items-center gap-2" onClick={onClose}>
             <Image
               src="/images/logo.png"
